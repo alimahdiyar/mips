@@ -11,9 +11,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee3c44b5-ad13-4709-a21f-3779f7cf1877" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
-    </list>
+    <list default="true" id="ee3c44b5-ad13-4709-a21f-3779f7cf1877" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -28,18 +26,13 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="108">
-              <caret line="126" column="18" lean-forward="true" selection-start-line="126" selection-start-column="18" selection-end-line="126" selection-end-column="18" />
+            <state relative-caret-position="225">
+              <caret line="120" lean-forward="true" selection-start-line="120" selection-end-line="120" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
               </folding>
             </state>
           </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test.txt">
-          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -63,11 +56,10 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds">
     <option name="x" value="-11" />
-    <option name="y" value="-11" />
-    <option name="width" value="1943" />
-    <option name="height" value="1043" />
+    <option name="width" value="980" />
+    <option name="height" value="1031" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -82,6 +74,17 @@
           <expand>
             <path>
               <item name="mipsproj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mips" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mipsproj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mips" type="462c0819:PsiDirectoryNode" />
+              <item name="mips-simulator-java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="mipsproj" type="b2602c69:ProjectViewProjectNode" />
+              <item name="mips" type="462c0819:PsiDirectoryNode" />
+              <item name="mips-simulator-java" type="462c0819:PsiDirectoryNode" />
               <item name="mips" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -127,12 +130,12 @@
       <workItem from="1530366194283" duration="251000" />
       <workItem from="1530441901584" duration="2571000" />
       <workItem from="1530446635134" duration="3393000" />
-      <workItem from="1530455724764" duration="351000" />
+      <workItem from="1530455724764" duration="593000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7454000" />
+    <option name="totallyTimeSpent" value="7696000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -147,15 +150,15 @@
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24642289" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24642289" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.3291367" />
       <window_info anchor="bottom" id="Messages" order="7" weight="0.32743362" />
       <window_info anchor="bottom" id="CMake" order="7" weight="0.3291367" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32743362" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32743362" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.34172663" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32743362" />
+      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32743362" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -213,8 +216,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="108">
-          <caret line="126" column="18" lean-forward="true" selection-start-line="126" selection-start-column="18" selection-end-line="126" selection-end-column="18" />
+        <state relative-caret-position="225">
+          <caret line="120" lean-forward="true" selection-start-line="120" selection-end-line="120" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
           </folding>
