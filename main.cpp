@@ -1,5 +1,8 @@
 #include <iostream>
+#include <vector>
 using namespace std;
+
+
 class Register{
 public:
     bool enable= true; //value jadid biyad dakhel reg ya na
@@ -114,9 +117,16 @@ private:
 
 };
 
+class MemoryStore{
+
+};
+
+
+
 int main() {
     Register a(5);
     Register b(6);
-    cout << a.getValue();
+    cout << a.getValue() << endl;
+
     return 0;
 }
