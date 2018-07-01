@@ -1,0 +1,3 @@
+C:/Users/ASUS/Desktop/mipsproj/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+C:/Users/ASUS/Desktop/mipsproj/cmake-build-debug/CMakeFiles/mipsproj.dir
+C:/Users/ASUS/Desktop/mipsproj/cmake-build-debug/CMakeFiles/edit_cache.dir
