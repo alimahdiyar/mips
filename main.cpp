@@ -9,7 +9,6 @@
 
 using namespace std;
 
-/*
 class Register{
 public:
     bool enable= true; //value jadid biyad dakhel reg ya na
@@ -29,7 +28,7 @@ public:
     void setValue(long newValue) {
         Register::newValue = newValue;
     }
-    void regClockcycle(){
+    void tick(){
         if(enable){
             if(newValue != -1){
                 value=newValue;
@@ -138,23 +137,59 @@ public:
     }
 
 };
+
 class RegisterFile {
 protected:
-    map<RegisterName::Names , Register> x;
+    map<RegisterName::Names , Register> registers;
+private:
+    bool enable = true;
+public:
+ void setValue(RegisterName::Names registerName, long value) {
+        Register reg = getRegister(registerName);
+        reg.setValue(value);
+    }
+
+ long getValue(RegisterName::Names registerName) {
+        return getRegister(registerName).getValue();
+    }
+
+ void disableWrite() {
+      enable = false;
+    }
+
+ void tick() {
+        if (enable) {
+            for (Register reg : registers.values()) {
+                reg.tick();
+            }
+        } else {
+            enable = true;
+        }
+    }
+
+
+protected:
+    bool validRegister(RegisterName::Names registerName) {
+        return registerName.isPrimitive();
+    }
+
+private:
+    Register getRegister(RegisterName::Names registerName) {
+        if (!validRegister(registerName)) {
+            throw "Invalid register";
+        }
+        if (registers.find(registerName) == registers.end()) {
+            Register reg();
+            registers.insert(make_pair(registerName, reg));
+        }
+        return registers.at(registerName);
+    }
 };
- */
+
+
+
 int main()
 {
-    char str [80];
-    float f;
-    FILE * pFile;
 
-    pFile = fopen ("myfile.txt","w+");
-    fprintf (pFile, "%f %s", 3.1416, "PI");
-    rewind (pFile);
-    fscanf (pFile, "%f", &f);
-    fscanf (pFile, "%s", str);
-    fclose (pFile);
-    printf ("I have read: %f and %s \n",f,str);
     return 0;
 }
