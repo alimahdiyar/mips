@@ -219,7 +219,38 @@ long getUnsignedValue(char b) {
     return 256 + b;
 }
 
+class Decode{
+public:
+    static const int NOP = 0xFF;
+};
 
+class PipelineRegister : public RegisterFile{
+public:
+    PipelineRegister () : RegisterFile() {
+        Register reg(Decode::NOP);
+        //TODO: registers.put(RegisterName.OP_CODE, register);
+    }
+
+    void forwardValues(PipelineRegister target) {
+
+
+        for(map<RegisterName::Names , Register>::iterator k = registers.begin(); k != registers.end(); k++){
+            target.setValue((*k).first, (*k).second.getValue());
+        }
+
+
+    }
+protected:
+    bool validRegister(RegisterName::Names registerName) {
+         return true;
+     }
+
+};
+
+class PipelineStage{
+public:
+    virtual void run();
+};
 
 int main() {
     //TODO: delete this
