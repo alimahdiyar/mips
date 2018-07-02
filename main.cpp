@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 using namespace std;
 
 
@@ -38,91 +39,100 @@ protected:
     long newValue=-1;//value jadid ke mikhad rekhte beshe dakhel reg
 };
 
-class RegisterName{
-public:
-    const int REG_0 = 0;
-    const int REG_1 = 1;
-    const int REG_2 = 2;
-    const int REG_3 = 3;
-    const int REG_4 = 4;
-    const int REG_5 = 5;
-    const int REG_6 = 6;
-    const int REG_7 = 7;
-    const int REG_8 = 8;
-    const int REG_9 = 9;
-    const int REG_10 = 10;
-    const int REG_11 = 11;
-    const int REG_12 = 12;
-    const int REG_13 = 13;
-    const int REG_14 = 14;
-    const int REG_15 = 15;
-    const int REG_16 = 16;
-    const int REG_17 = 17;
-    const int REG_18 = 18;
-    const int REG_19 = 19;
-    const int REG_20 = 20;
-    const int REG_21 = 21;
-    const int REG_22 = 22;
-    const int REG_23 = 23;
-    const int REG_24 = 24;
-    const int REG_25 = 25;
-    const int REG_26 = 26;
-    const int REG_27 = 27;
-    const int REG_28 = 28;
-    const int REG_29 = 29;
-    const int REG_30 = 30;
-    const int REG_31 = 31;
-    bool INSTRUCTION = false;
-    bool R_S = false;
-    bool R_T =false;
-    bool R_D = false;
-    bool IMMEDIATE = false;
-    bool SHAMT = false;
-    bool ADDRESS = false;
-    bool REG_DST = false;
-    bool ALU_SRC = false;
-    bool MEM_TO_REG = false;
-    bool REG_WRITE = false;
-    bool MEM_READ = false;
-    bool MEM_WRITE = false;
-    bool BRANCH = false;
-    bool BRANCH_NE = false;
-    bool ALU_OP = false;
-    bool JUMP = false;
-    bool JUMP_SRC = false;
-    bool READ_DATA_1 = false;
-    bool READ_DATA_2 = false;
-    bool ALU_RESULT = false;
-    bool MEM_RESULT = false;
-    bool WRITE_DATA = false;
-    bool HALT = false;
-    bool OP_CODE = false;
-    bool PC = false;
-
-    bool getIsPrimitive() {
-        return isPrimitive;
-    }
-
-private:
-
-    RegisterName(){
-        RegisterName::isPrimitive = false;
-    }
-
-    RegisterName(bool isPrimitive){
-        RegisterName::isPrimitive = isPrimitive;
-    }
-
-    bool isPrimitive;
-
+enum RegisterName {
+    REG_0,
+    REG_1,
+    REG_2,
+    REG_3,
+    REG_4,
+    REG_5,
+    REG_6,
+    REG_7,
+    REG_8,
+    REG_9,
+    REG_10,
+    REG_11,
+    REG_12,
+    REG_13,
+    REG_14,
+    REG_15,
+    REG_16,
+    REG_17,
+    REG_18,
+    REG_19,
+    REG_20,
+    REG_21,
+    REG_22,
+    REG_23,
+    REG_24,
+    REG_25,
+    REG_26,
+    REG_27,
+    REG_28,
+    REG_29,
+    REG_30,
+    REG_31,
+    INSTRUCTION = false,
+    REG_S = false,
+    REG_T = false,
+    REG_D = false,
+    IMMEDIATE = false,
+    SHAMT = false,
+    ADDRESS = false,
+    REG_DST = false,
+    ALU_SRC = false,
+    MEM_TO_REG = false,
+    REG_WRITE = false,
+    MEM_READ = false,
+    MEM_WRITE = false,
+    BRANCH = false,
+    BRANCH_NE = false,
+    ALU_OP = false,
+    JUMP = false,
+    JUMP_SRC = false,
+    READ_DATA_1 = false,
+    READ_DATA_2 = false,
+    ALU_RESULT = false,
+    MEM_RESULT = false,
+    WRITE_DATA = false,
+    HALT = false,
+    OP_CODE = false,
+    PC = false
 };
 
 class MemoryStore{
+private:
+    vector<long> memory;
+public:
+
+    long getValue(long location){
+        long memAddress = location >> 2;
+        if(memAddress >= memory.size()){
+            throw "Memory address out of bounds";
+        }
+        return memory[(int)memAddress];
+    }
+
+    void storeValue(long location, long value) {
+        long memoryAddress = location >> 2;
+
+        if (memoryAddress >= memory.size()) {
+            throw "Memory address out of bounds";
+        }
+        memory[(int)memoryAddress] =  value;
+    }
+    // age 1000 masalan bod adade manfi hast ba in mosbat mishe
+    long getUnsignedValue(char b) {
+        if (b >= 0) { return b; }
+
+        return 256 + b;
+    }
 
 };
-
-
-
+class RegisterFile {
+protected:
+    map<RegisterName, Register> x;
+};
 int main() {
     Register a(5);
     Register b(6);
