@@ -205,7 +205,7 @@ class RegisterFile {
                 throw "Invalid register";
             }
             if (registers.find(registerName) == registers.end()) {
-                Register reg();
+                Register reg;
                 registers.insert(make_pair(registerName, reg));
             }
             return registers.at(registerName);
@@ -218,16 +218,20 @@ long getUnsignedValue(char b) {
 
     return 256 + b;
 }
-
-class Decode{
+class ProgramCounter :  public Register{
 public:
-    static const int NOP = 0xFF;
-};
+    ProgramCounter() : Register(0x1000){} //initial value
 
+    void increment(){
+        newValue = getValue() + 4;
+    }
+
+
+};
 class PipelineRegister : public RegisterFile{
 public:
     PipelineRegister () : RegisterFile() {
-        Register reg(Decode::NOP);
+        Register reg(0xFF);
         //TODO: registers.put(RegisterName.OP_CODE, register);
     }
 
@@ -242,9 +246,83 @@ public:
     }
 protected:
     bool validRegister(RegisterName::Names registerName) {
-         return true;
-     }
+        return true;
+    }
 
+};
+
+class Decode{
+public:
+    static const int NOP = 0xFF;
+private:
+// values for decoding the instruction
+    static const int OPCODE_MASK = 0xFC000000;
+    static const int OPCODE_SHIFT = 26;
+    static const int RS_MASK = 0x3E00000;
+    static const int RS_SHIFT = 21;
+    static const int RT_MASK = 0x1F0000;
+    static const int RT_SHIFT = 16;
+    static const int RD_MASK = 0xF800;
+    static const int RD_SHIFT = 11;
+    static const int SHAMT_MASK = 0x7C0;
+    static const int SHAMT_SHIFT = 6;
+    static const int FUNCT_MASK = 0x3F;
+    static const int FUNCT_SHIFT = 0;
+    static const int IMMEDIATE_MASK = 0xFFFF;
+    static const int IMMEDIATE_SHIFT = 0;
+    static const int ADDRESS_MASK = 0x3FFFFFF;
+    static const int ADDRESS_SHIFT = 0;
+// values for opcodes and funct codes
+    static const int ARITH_OP_CODE = 0;
+    static const int ADD_FUNCT = 0x20;
+    static const int SUB_FUNCT = 0x22;
+    static const int AND_FUNCT = 0x24;
+    static const int OR_FUNCT = 0x25;
+    static const int NOR_FUNCT = 0x27;
+    static const int SLT_FUNCT = 0x2a;
+    static const int ADDI = 0x8;
+    static const int ANDI = 0xC;
+    static const int ORI = 0xD;
+    static const int SLTI = 0xA;
+    static const int BEQ = 0x4;
+    static const int BNE = 0x5;
+    static const int J = 0x2;
+    static const int JR_FUNCT = 0x8;
+    static const int LW = 0x23;
+    static const int SW = 0x2B;
+    static const int HLT = 0x3F;
+
+
+    const PipelineRegister if_id;
+    const PipelineRegister id_ex;
+    const RegisterFile registerFile;
+    const ProgramCounter pc;
+public:
+    Decode(const PipelineRegister &if_id, const PipelineRegister &id_ex, const RegisterFile &registerFile,
+           const ProgramCounter &pc) : if_id(if_id), id_ex(id_ex), registerFile(registerFile), pc(pc) {}
+
+ void run() {
+     //TODO: bugs
+     /*
+     long instruction = if_id.getValue(RegisterName.INSTRUCTION);
+     long opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
+     long rs = (instruction & RS_MASK) >> RS_SHIFT;
+     long rt = (instruction & RT_MASK) >> RT_SHIFT;
+     long rd = (instruction & RD_MASK) >> RD_SHIFT;
+     long shamt = (instruction & SHAMT_MASK) >> SHAMT_SHIFT;
+     long funct = (instruction & FUNCT_MASK) >> FUNCT_SHIFT;
+     long immediate = (instruction & IMMEDIATE_MASK) >> IMMEDIATE_SHIFT;
+     long address = (instruction & ADDRESS_MASK) >> ADDRESS_SHIFT;
+
+     id_ex.setValue(RegisterName.R_S, rs);
+     id_ex.setValue(RegisterName.R_T, rt);
+     id_ex.setValue(RegisterName.R_D, rd);
+     id_ex.setValue(RegisterName.SHAMT, shamt);
+     id_ex.setValue(RegisterName.IMMEDIATE, immediate);
+     id_ex.setValue(RegisterName.ADDRESS, address);
+     id_ex.setValue(RegisterName.OP_CODE, opCode);
+     */
+ }
 };
 
 class PipelineStage{

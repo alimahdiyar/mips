@@ -12,6 +12,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee3c44b5-ad13-4709-a21f-3779f7cf1877" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/mipsproj.dir/main.cpp.obj" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/main.cpp" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -28,31 +29,14 @@
       <file leaf-file-name="main.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="290">
-              <caret line="253" lean-forward="true" selection-start-line="253" selection-end-line="253" />
+            <state relative-caret-position="1341">
+              <caret line="325" column="1" selection-start-line="325" selection-start-column="1" selection-end-line="325" selection-end-column="1" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
                 <element signature="e#73#90#0" expanded="true" />
-                <element signature="e#152#826#1" />
-                <element signature="e#828#2046#1" />
               </folding>
             </state>
           </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="test.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/test.txt">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="test.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/cmake-build-debug/test.txt">
-          <provider selected="true" editor-type-id="text-editor" />
-        </entry>
-      </file>
-      <file leaf-file-name="CMakeLists.txt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-          <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
     </leaf>
@@ -61,11 +45,12 @@
     <findStrings>
       <find>(false),</find>
       <find>(false)</find>
+      <find>NOP</find>
+      <find>opcode_mask</find>
     </findStrings>
     <replaceStrings>
       <replace>= false</replace>
       <replace>= false;</replace>
-      <replace>= false</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -78,7 +63,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-11" />
     <option name="width" value="980" />
     <option name="height" value="1031" />
@@ -152,7 +137,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="19197000" />
+    <option name="totallyTimeSpent" value="23389000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -164,19 +149,19 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="0" width="653" height="687" extended-state="0" />
+    <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23051947" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.112877585" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32743362" />
-      <window_info anchor="bottom" id="Messages" order="7" weight="0.32389382" />
+      <window_info anchor="bottom" id="Messages" order="7" weight="0.31858408" />
       <window_info anchor="bottom" id="CMake" order="7" weight="0.3291367" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3415929" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32675046" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32566372" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32920355" />
+      <window_info anchor="bottom" id="Terminal" order="7" weight="0.32854578" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -209,8 +194,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -222,8 +205,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -255,9 +236,6 @@
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/cmake-build-debug/test.txt">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/test.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -268,8 +246,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -281,8 +257,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -294,8 +268,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -337,8 +309,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -350,8 +320,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -363,8 +331,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -406,8 +372,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -419,8 +383,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -432,8 +394,6 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
@@ -462,21 +422,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/test.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/test.txt">
+    <entry file="file://$PROJECT_DIR$/cmake-build-debug/test.txt">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="253" lean-forward="true" selection-start-line="253" selection-end-line="253" />
+        <state relative-caret-position="1341">
+          <caret line="325" column="1" selection-start-line="325" selection-start-column="1" selection-end-line="325" selection-end-column="1" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#73#90#0" expanded="true" />
-            <element signature="e#152#826#1" />
-            <element signature="e#828#2046#1" />
           </folding>
         </state>
       </provider>
