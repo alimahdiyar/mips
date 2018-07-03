@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/mipsproj.dir/main.cpp.o  -o mipsproj 
