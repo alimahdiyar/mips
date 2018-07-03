@@ -195,8 +195,44 @@ class RegisterFile {
 
     protected:
         bool validRegister(RegisterName::Names registerName) {
-            //TODO: write isPrimitive()
-            //return registerName.isPrimitive();
+            //TODO: Read this
+            if(
+            registerName == RegisterName::Names::REG_0 ||
+            registerName == RegisterName::Names::REG_1 ||
+            registerName == RegisterName::Names::REG_2 ||
+            registerName == RegisterName::Names::REG_3 ||
+            registerName == RegisterName::Names::REG_4 ||
+            registerName == RegisterName::Names::REG_5 ||
+            registerName == RegisterName::Names::REG_6 ||
+            registerName == RegisterName::Names::REG_7 ||
+            registerName == RegisterName::Names::REG_8 ||
+            registerName == RegisterName::Names::REG_9 ||
+            registerName == RegisterName::Names::REG_10 ||
+            registerName == RegisterName::Names::REG_11 ||
+            registerName == RegisterName::Names::REG_12 ||
+            registerName == RegisterName::Names::REG_13 ||
+            registerName == RegisterName::Names::REG_14 ||
+            registerName == RegisterName::Names::REG_15 ||
+            registerName == RegisterName::Names::REG_16 ||
+            registerName == RegisterName::Names::REG_17 ||
+            registerName == RegisterName::Names::REG_18 ||
+            registerName == RegisterName::Names::REG_19 ||
+            registerName == RegisterName::Names::REG_20 ||
+            registerName == RegisterName::Names::REG_21 ||
+            registerName == RegisterName::Names::REG_22 ||
+            registerName == RegisterName::Names::REG_23 ||
+            registerName == RegisterName::Names::REG_24 ||
+            registerName == RegisterName::Names::REG_25 ||
+            registerName == RegisterName::Names::REG_26 ||
+            registerName == RegisterName::Names::REG_27 ||
+            registerName == RegisterName::Names::REG_28 ||
+            registerName == RegisterName::Names::REG_29 ||
+            registerName == RegisterName::Names::REG_30 ||
+            registerName == RegisterName::Names::REG_31
+            ){
+                return true;
+            }
+            return false;
         }
 
     private:
@@ -232,7 +268,8 @@ class PipelineRegister : public RegisterFile{
 public:
     PipelineRegister () : RegisterFile() {
         Register reg(0xFF);
-        //TODO: registers.put(RegisterName.OP_CODE, register);
+        //TODO: Read this
+        registers.insert(make_pair(RegisterName::Names ::OP_CODE, reg));
     }
 
     void forwardValues(PipelineRegister target) {
@@ -293,18 +330,22 @@ private:
     static const int HLT = 0x3F;
 
 
-    const PipelineRegister if_id;
-    const PipelineRegister id_ex;
-    const RegisterFile registerFile;
-    const ProgramCounter pc;
+    PipelineRegister if_id;
+    PipelineRegister id_ex;
+    RegisterFile registerFile;
+    ProgramCounter pc;
 public:
-    Decode(const PipelineRegister &if_id, const PipelineRegister &id_ex, const RegisterFile &registerFile,
-           const ProgramCounter &pc) : if_id(if_id), id_ex(id_ex), registerFile(registerFile), pc(pc) {}
+    //TODO: Read this
+    Decode(PipelineRegister if_id, PipelineRegister id_ex, RegisterFile registerFile, ProgramCounter pc) {
+        Decode::if_id = if_id;
+        Decode::id_ex = id_ex;
+        Decode::registerFile = registerFile;
+        Decode::pc = pc;
+    }
 
  void run() {
-     //TODO: bugs
-     /*
-     long instruction = if_id.getValue(RegisterName.INSTRUCTION);
+     //TODO: Read this
+     long instruction = if_id.getValue(RegisterName::Names::INSTRUCTION);
      long opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
      long rs = (instruction & RS_MASK) >> RS_SHIFT;
      long rt = (instruction & RT_MASK) >> RT_SHIFT;
@@ -314,14 +355,13 @@ public:
      long immediate = (instruction & IMMEDIATE_MASK) >> IMMEDIATE_SHIFT;
      long address = (instruction & ADDRESS_MASK) >> ADDRESS_SHIFT;
 
-     id_ex.setValue(RegisterName.R_S, rs);
-     id_ex.setValue(RegisterName.R_T, rt);
-     id_ex.setValue(RegisterName.R_D, rd);
-     id_ex.setValue(RegisterName.SHAMT, shamt);
-     id_ex.setValue(RegisterName.IMMEDIATE, immediate);
-     id_ex.setValue(RegisterName.ADDRESS, address);
-     id_ex.setValue(RegisterName.OP_CODE, opCode);
-     */
+     id_ex.setValue(RegisterName::Names::REG_S, rs);
+     id_ex.setValue(RegisterName::Names::REG_T, rt);
+     id_ex.setValue(RegisterName::Names::REG_D, rd);
+     id_ex.setValue(RegisterName::Names::SHAMT, shamt);
+     id_ex.setValue(RegisterName::Names::IMMEDIATE, immediate);
+     id_ex.setValue(RegisterName::Names::ADDRESS, address);
+     id_ex.setValue(RegisterName::Names::OP_CODE, opCode);
  }
 };
 
