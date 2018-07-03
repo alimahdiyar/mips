@@ -1,9 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/mipsproj.dir/main.cpp.obj"
+  "CMakeFiles/mipsproj.dir/main.cpp.o"
   "mipsproj.pdb"
-  "mipsproj.exe"
-  "mipsproj.exe.manifest"
-  "libmipsproj.dll.a"
+  "mipsproj"
 )
 
 # Per-language clean rules from dependency scanning.

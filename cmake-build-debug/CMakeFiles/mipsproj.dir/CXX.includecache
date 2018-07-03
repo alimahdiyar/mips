@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-D:/mips/main.cpp
+/home/alideb/Desktop/mips/mips/main.cpp
 iostream
 -
 vector

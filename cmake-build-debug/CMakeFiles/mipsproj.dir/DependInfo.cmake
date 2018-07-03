@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "D:/mips/main.cpp" "D:/mips/cmake-build-debug/CMakeFiles/mipsproj.dir/main.cpp.obj"
+  "/home/alideb/Desktop/mips/mips/main.cpp" "/home/alideb/Desktop/mips/mips/cmake-build-debug/CMakeFiles/mipsproj.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

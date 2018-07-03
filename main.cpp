@@ -340,6 +340,6 @@ int main() {
         cout << (*k).second << endl;
     }
     */
-
+    cout << RegisterName::Names::INSTRUCTION ;
     return 0;
 }
