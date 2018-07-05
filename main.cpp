@@ -8,7 +8,7 @@
 #include <fstream>
 
 using namespace std;
-string getBinary(long value){
+string getBinary(unsigned int value){
     string str(64, '0');
 
     for(unsigned int i = 0; i < 64; i++)
@@ -31,7 +31,7 @@ string getBinary(int value){
     return str;
 }
 
-string getBinary(unsigned int value){
+string getBinary(long value){
     string str(64, '0');
 
     for(unsigned int i = 0; i < 64; i++)
@@ -63,15 +63,15 @@ public:
         Register::value = 0;
     }
 
-    Register(long value) {
+    Register(unsigned int value) {
         Register::value = value;
     }
 
-    long getValue() const {
+    unsigned int getValue() const {
         return value;
     }
 
-    void setValue(long newValue) {
+    void setValue(unsigned int newValue) {
         Register::newValue = newValue;
     }
 
@@ -93,9 +93,9 @@ public:
         enable = true;
     }
 
-    long newValue = -1;
+    unsigned int newValue = -1;
 private:
-    long value;// meghdar register
+    unsigned int value;// meghdar register
 //value jadid ke mikhad rekhte beshe dakhel reg
 };
 class RegisterName {
@@ -161,17 +161,17 @@ public:
         PC
     };
 
-    static RegisterName::Names valueOf(long ordinal) {
+    static RegisterName::Names valueOf(unsigned int ordinal) {
         return static_cast<RegisterName::Names>(ordinal);
     }
 
 };
 class MemoryStore {
 private:
-    vector<long> memory;
+    vector<unsigned int> memory;
 public:
     MemoryStore(){
-        memory.push_back((int)(((long) 0xFC) << 24));
+        memory.push_back((int)(((unsigned int) 0xFC) << 24));
     }
     void readFile(char filename[]) {
         char f[4];
@@ -182,7 +182,7 @@ public:
             fscanf(pFile, "%c", &f[2]);
             fscanf(pFile, "%c", &f[3]);
 
-            long word = getUnsignedValue(f[0]);
+            unsigned int word = getUnsignedValue(f[0]);
             word += getUnsignedValue(f[1]) << 8;
             word += getUnsignedValue(f[2]) << 16;
             word += getUnsignedValue(f[3]) << 24;
@@ -193,16 +193,16 @@ public:
         fclose(pFile);
     }
 
-    long getValue(long location) {
-        long memAddress = location >> 2;
+    unsigned int getValue(unsigned int location) {
+        unsigned int memAddress = location >> 2;
         if (memAddress >= memory.size()) {
             throw "Memory address out of bounds";
         }
         return memory[(int) memAddress];
     }
 
-    void storeValue(long location, long value) {
-        long memoryAddress = location >> 2;
+    void storeValue(unsigned int location, unsigned int value) {
+        unsigned int memoryAddress = location >> 2;
 
         if (memoryAddress >= memory.size()) {
             throw "Memory address out of bounds";
@@ -211,7 +211,7 @@ public:
     }
 
     // age 1000 masalan bod adade manfi hast ba in mosbat mishe
-    long getUnsignedValue(char b) {
+    unsigned int getUnsignedValue(char b) {
         if (b >= 0) { return b; }
 
         return 256 + b;
@@ -222,7 +222,7 @@ class RegisterFile {
 private:
         bool enable = true;
     public:
-        void setValue(RegisterName::Names registerName, long value) {
+        void setValue(RegisterName::Names registerName, unsigned int value) {
             if (!validRegister(registerName)) {
                 throw "Invalid register";
             }
@@ -232,7 +232,7 @@ private:
             registers.at(registerName).setValue(value);
         }
 
-        long getValue(RegisterName::Names registerName) {
+        unsigned int getValue(RegisterName::Names registerName) {
             return getRegister(registerName).getValue();
         }
 
@@ -398,15 +398,15 @@ public:
 
     void run() {
      //TODO: Read this
-     long instruction = if_id->getValue(RegisterName::Names::INSTRUCTION);
-     long opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
-     long rs = (instruction & RS_MASK) >> RS_SHIFT;
-     long rt = (instruction & RT_MASK) >> RT_SHIFT;
-     long rd = (instruction & RD_MASK) >> RD_SHIFT;
-     long shamt = (instruction & SHAMT_MASK) >> SHAMT_SHIFT;
-     long funct = (instruction & FUNCT_MASK) >> FUNCT_SHIFT;
-     long immediate = (instruction & IMMEDIATE_MASK) >> IMMEDIATE_SHIFT;
-     long address = (instruction & ADDRESS_MASK) >> ADDRESS_SHIFT;
+     unsigned int instruction = if_id->getValue(RegisterName::Names::INSTRUCTION);
+     unsigned int opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
+     unsigned int rs = (instruction & RS_MASK) >> RS_SHIFT;
+     unsigned int rt = (instruction & RT_MASK) >> RT_SHIFT;
+     unsigned int rd = (instruction & RD_MASK) >> RD_SHIFT;
+     unsigned int shamt = (instruction & SHAMT_MASK) >> SHAMT_SHIFT;
+     unsigned int funct = (instruction & FUNCT_MASK) >> FUNCT_SHIFT;
+     unsigned int immediate = (instruction & IMMEDIATE_MASK) >> IMMEDIATE_SHIFT;
+     unsigned int address = (instruction & ADDRESS_MASK) >> ADDRESS_SHIFT;
 
      id_ex->setValue(RegisterName::Names::REG_S, rs);
      id_ex->setValue(RegisterName::Names::REG_T, rt);
@@ -415,10 +415,10 @@ public:
      id_ex->setValue(RegisterName::Names::IMMEDIATE, immediate);
      id_ex->setValue(RegisterName::Names::ADDRESS, address);
      id_ex->setValue(RegisterName::Names::OP_CODE, opCode);
-     map<RegisterName::Names , long> controlLines =
+     map<RegisterName::Names , unsigned int> controlLines =
              setControlLines(opCode, funct);
-     long readData1 = registerFile->getValue(RegisterName::valueOf(rs));
-     long readData2 = registerFile->getValue(RegisterName::valueOf(rt));
+     unsigned int readData1 = registerFile->getValue(RegisterName::valueOf(rs));
+     unsigned int readData2 = registerFile->getValue(RegisterName::valueOf(rt));
      (*id_ex).setValue(RegisterName::Names::READ_DATA_1, readData1);
      (*id_ex).setValue(RegisterName::Names::READ_DATA_2, readData2);
 
@@ -435,7 +435,7 @@ public:
      {
          takeBranch(immediate);
      } else if (controlLines.at(RegisterName::Names ::JUMP) == 1) {
-         long jumpAddress = address;
+         unsigned int jumpAddress = address;
 
          if (controlLines.at(RegisterName::Names ::JUMP_SRC) == 1) {
              jumpAddress = readData1;
@@ -451,10 +451,10 @@ public:
      }
  }
 private :
-    map<RegisterName::Names , long> setControlLines(
-            long opCode, long funct
+    map<RegisterName::Names , unsigned int> setControlLines(
+            unsigned int opCode, unsigned int funct
     ) {
-        map<RegisterName::Names , long> values ;
+        map<RegisterName::Names , unsigned int> values ;
 
 
         values.insert(make_pair(RegisterName::Names::REG_DST, 0l));
@@ -638,14 +638,14 @@ private:
         pc->disableWrite();
     }
 
-   void takeBranch(long addressOffset) {
+   void takeBranch(unsigned int addressOffset) {
         zeroOutRegister(*if_id);
 
         pc->setValue(if_id->getValue(RegisterName::Names::PC) + 4 + 4 * addressOffset);
         pc->enableWrite();
     }
 
-    void takeJump(long address) {
+    void takeJump(unsigned int address) {
         zeroOutRegister(*if_id);
 
         pc->setValue(address * 4);
@@ -686,13 +686,13 @@ public:
     }
 
     void run() {
-        long aluArg1, aluArg2, writeData;
+        unsigned int aluArg1, aluArg2, writeData;
 
-        long dest = ex_mem->getValue(RegisterName::Names::REG_DST) == 1 ?
+        unsigned int dest = ex_mem->getValue(RegisterName::Names::REG_DST) == 1 ?
                     ex_mem->getValue(RegisterName::Names::REG_D) :
                     ex_mem->getValue(RegisterName::Names::REG_T);
 
-        long dest2 = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
+        unsigned int dest2 = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
                      mem_wb->getValue(RegisterName::Names::REG_D) :
                      mem_wb->getValue(RegisterName::Names::REG_T);
 
@@ -739,7 +739,7 @@ public:
 
         id_ex->forwardValues(*ex_mem);
 
-        long result = 0;
+        unsigned int result = 0;
 
         switch((int)id_ex->getValue(RegisterName::Names::ALU_OP)) {
             case (0):
@@ -788,7 +788,7 @@ public:
     Fetch() {}
 
     void run() {
-        long instruction = memory->getValue((*pc).getValue());
+        unsigned int instruction = memory->getValue((*pc).getValue());
         //System.out.println(Integer.toHexString(instruction));
         (*if_id).setValue(RegisterName::Names::INSTRUCTION, instruction);
 
@@ -872,11 +872,11 @@ public :
 public:
     void run() {
         if (mem_wb->getValue(RegisterName::Names::REG_WRITE) == 1) {
-            long dest = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
+            unsigned int dest = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
                         mem_wb->getValue(RegisterName::Names::REG_D) :
                         mem_wb->getValue(RegisterName::Names::REG_T);
 
-            long value = mem_wb->getValue(RegisterName::Names::MEM_TO_REG) == 1 ?
+            unsigned int value = mem_wb->getValue(RegisterName::Names::MEM_TO_REG) == 1 ?
                          mem_wb->getValue(RegisterName::Names::MEM_RESULT) :
                          mem_wb->getValue(RegisterName::Names::ALU_RESULT);
 
