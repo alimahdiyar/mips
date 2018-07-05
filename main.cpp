@@ -8,6 +8,52 @@
 #include <fstream>
 
 using namespace std;
+string getBinary(long value){
+    string str(64, '0');
+
+    for(unsigned int i = 0; i < 64; i++)
+    {
+        if( (1ll << i) & value)
+            str[63-i] = '1';
+    }
+
+    return str;
+}
+string getBinary(int value){
+    string str(64, '0');
+
+    for(unsigned int i = 0; i < 64; i++)
+    {
+        if( (1ll << i) & value)
+            str[63-i] = '1';
+    }
+
+    return str;
+}
+
+string getBinary(unsigned int value){
+    string str(64, '0');
+
+    for(unsigned int i = 0; i < 64; i++)
+    {
+        if( (1ll << i) & value)
+            str[63-i] = '1';
+    }
+
+    return str;
+}
+
+string getBinary(unsigned long value){
+    string str(64, '0');
+
+    for(unsigned int i = 0; i < 64; i++)
+    {
+        if( (1ll << i) & value)
+            str[63-i] = '1';
+    }
+
+    return str;
+}
 
 class Register {
 public:
@@ -47,10 +93,10 @@ public:
         enable = true;
     }
 
+    long newValue = -1;
 private:
     long value;// meghdar register
-protected:
-    long newValue = -1;//value jadid ke mikhad rekhte beshe dakhel reg
+//value jadid ke mikhad rekhte beshe dakhel reg
 };
 class RegisterName {
 public:
@@ -124,8 +170,10 @@ class MemoryStore {
 private:
     vector<long> memory;
 public:
-    MemoryStore(){}
-    MemoryStore(char filename[]) {
+    MemoryStore(){
+        memory.push_back((int)(((long) 0xFC) << 24));
+    }
+    void readFile(char filename[]) {
         char f[4];
         FILE *pFile;
         pFile = fopen(filename, "r");
@@ -171,14 +219,17 @@ public:
 
 };
 class RegisterFile {
-    protected:
-        map<RegisterName::Names, Register> registers;
-    private:
+private:
         bool enable = true;
     public:
         void setValue(RegisterName::Names registerName, long value) {
-            Register reg = getRegister(registerName);
-            reg.setValue(value);
+            if (!validRegister(registerName)) {
+                throw "Invalid register";
+            }
+            if (registers.find(registerName) == registers.end()) {
+                registers.insert(make_pair(registerName, Register()));
+            }
+            registers.at(registerName).setValue(value);
         }
 
         long getValue(RegisterName::Names registerName) {
@@ -186,6 +237,7 @@ class RegisterFile {
         }
 
         void disableWrite() {
+
             enable = false;
         }
 
@@ -200,8 +252,9 @@ class RegisterFile {
         }
 
 
-    protected:
-        bool validRegister(RegisterName::Names registerName) {
+    map<RegisterName::Names, Register> registers;
+protected:
+        virtual bool validRegister(RegisterName::Names registerName) {
             //TODO: Read this
             if(
             registerName == RegisterName::Names::REG_0 ||
@@ -248,15 +301,14 @@ class RegisterFile {
                 throw "Invalid register";
             }
             if (registers.find(registerName) == registers.end()) {
-                Register reg;
-                registers.insert(make_pair(registerName, reg));
+                registers.insert(make_pair(registerName, Register()));
             }
             return registers.at(registerName);
         }
     };
 class ProgramCounter :  public Register{
 public:
-    ProgramCounter() : Register(0x1000){} //initial value
+    ProgramCounter() : Register(0){} //initial value
 
     void increment(){
         newValue = getValue() + 4;
@@ -272,7 +324,7 @@ public:
         registers.insert(make_pair(RegisterName::Names::OP_CODE, reg));
     }
 
-    void forwardValues(PipelineRegister target) {
+    void forwardValues(PipelineRegister &target) {
 
 
         for(map<RegisterName::Names , Register>::iterator k = registers.begin(); k != registers.end(); k++){
@@ -282,7 +334,7 @@ public:
 
     }
 protected:
-    bool validRegister(RegisterName::Names registerName) {
+    bool validRegister(RegisterName::Names registerName) override {
         return true;
     }
 
@@ -329,13 +381,13 @@ private:
     static const int HLT = 0x3F;
 
 
-    PipelineRegister if_id;
-    PipelineRegister id_ex;
-    RegisterFile registerFile;
-    ProgramCounter pc;
+    PipelineRegister *if_id;
+    PipelineRegister *id_ex;
+    RegisterFile *registerFile;
+    ProgramCounter *pc;
 public:
     //TODO: Read this
-    Decode(PipelineRegister if_id, PipelineRegister id_ex, RegisterFile registerFile, ProgramCounter pc) {
+    Decode(PipelineRegister *if_id, PipelineRegister *id_ex, RegisterFile *registerFile, ProgramCounter *pc) {
         Decode::if_id = if_id;
         Decode::id_ex = id_ex;
         Decode::registerFile = registerFile;
@@ -346,7 +398,7 @@ public:
 
     void run() {
      //TODO: Read this
-     long instruction = if_id.getValue(RegisterName::Names::INSTRUCTION);
+     long instruction = if_id->getValue(RegisterName::Names::INSTRUCTION);
      long opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
      long rs = (instruction & RS_MASK) >> RS_SHIFT;
      long rt = (instruction & RT_MASK) >> RT_SHIFT;
@@ -356,23 +408,23 @@ public:
      long immediate = (instruction & IMMEDIATE_MASK) >> IMMEDIATE_SHIFT;
      long address = (instruction & ADDRESS_MASK) >> ADDRESS_SHIFT;
 
-     id_ex.setValue(RegisterName::Names::REG_S, rs);
-     id_ex.setValue(RegisterName::Names::REG_T, rt);
-     id_ex.setValue(RegisterName::Names::REG_D, rd);
-     id_ex.setValue(RegisterName::Names::SHAMT, shamt);
-     id_ex.setValue(RegisterName::Names::IMMEDIATE, immediate);
-     id_ex.setValue(RegisterName::Names::ADDRESS, address);
-     id_ex.setValue(RegisterName::Names::OP_CODE, opCode);
+     id_ex->setValue(RegisterName::Names::REG_S, rs);
+     id_ex->setValue(RegisterName::Names::REG_T, rt);
+     id_ex->setValue(RegisterName::Names::REG_D, rd);
+     id_ex->setValue(RegisterName::Names::SHAMT, shamt);
+     id_ex->setValue(RegisterName::Names::IMMEDIATE, immediate);
+     id_ex->setValue(RegisterName::Names::ADDRESS, address);
+     id_ex->setValue(RegisterName::Names::OP_CODE, opCode);
      map<RegisterName::Names , long> controlLines =
              setControlLines(opCode, funct);
-     long readData1 = registerFile.getValue(RegisterName::valueOf(rs));
-     long readData2 = registerFile.getValue(RegisterName::valueOf(rt));
-     id_ex.setValue(RegisterName::Names::READ_DATA_1, readData1);
-     id_ex.setValue(RegisterName::Names::READ_DATA_2, readData2);
+     long readData1 = registerFile->getValue(RegisterName::valueOf(rs));
+     long readData2 = registerFile->getValue(RegisterName::valueOf(rt));
+     (*id_ex).setValue(RegisterName::Names::READ_DATA_1, readData1);
+     (*id_ex).setValue(RegisterName::Names::READ_DATA_2, readData2);
 
-     if (id_ex.getValue(RegisterName::Names ::MEM_READ) == 1 &&
-         ((id_ex.getValue(RegisterName::Names::REG_T) == rs) ||
-          (id_ex.getValue(RegisterName::Names::REG_T) == rt)))
+     if (id_ex->getValue(RegisterName::Names ::MEM_READ) == 1 &&
+         ((id_ex->getValue(RegisterName::Names::REG_T) == rs) ||
+          (id_ex->getValue(RegisterName::Names::REG_T) == rt)))
      {
          stallPipeline();
      } else if (controlLines.at(RegisterName::Names ::BRANCH) == 1 &&
@@ -406,172 +458,172 @@ private :
 
 
         values.insert(make_pair(RegisterName::Names::REG_DST, 0l));
-        id_ex.setValue(RegisterName::Names::REG_DST, 0l);
+        id_ex->setValue(RegisterName::Names::REG_DST, 0l);
         values.insert(make_pair(RegisterName::Names::ALU_SRC, 0l));
-        id_ex.setValue(RegisterName::Names::ALU_SRC, 0l);
+        id_ex->setValue(RegisterName::Names::ALU_SRC, 0l);
         values.insert(make_pair(RegisterName::Names::MEM_TO_REG, 0l));
-        id_ex.setValue(RegisterName::Names::MEM_TO_REG, 0l);
+        id_ex->setValue(RegisterName::Names::MEM_TO_REG, 0l);
         values.insert(make_pair(RegisterName::Names::REG_WRITE, 0l));
-        id_ex.setValue(RegisterName::Names::REG_WRITE, 0l);
+        id_ex->setValue(RegisterName::Names::REG_WRITE, 0l);
         values.insert(make_pair(RegisterName::Names::MEM_READ, 0l));
-        id_ex.setValue(RegisterName::Names::MEM_READ, 0l);
+        id_ex->setValue(RegisterName::Names::MEM_READ, 0l);
         values.insert(make_pair(RegisterName::Names::MEM_WRITE, 0l));
-        id_ex.setValue(RegisterName::Names::MEM_WRITE, 0l);
+        id_ex->setValue(RegisterName::Names::MEM_WRITE, 0l);
         values.insert(make_pair(RegisterName::Names::BRANCH, 0l));
-        id_ex.setValue(RegisterName::Names::BRANCH, 0l);
+        id_ex->setValue(RegisterName::Names::BRANCH, 0l);
         values.insert(make_pair(RegisterName::Names::BRANCH_NE, 0l));
-        id_ex.setValue(RegisterName::Names::BRANCH_NE, 0l);
+        id_ex->setValue(RegisterName::Names::BRANCH_NE, 0l);
         values.insert(make_pair(RegisterName::Names::JUMP, 0l));
-        id_ex.setValue(RegisterName::Names::JUMP, 0l);
+        id_ex->setValue(RegisterName::Names::JUMP, 0l);
         values.insert(make_pair(RegisterName::Names::JUMP_SRC, 0l));
-        id_ex.setValue(RegisterName::Names::JUMP_SRC, 0l);
+        id_ex->setValue(RegisterName::Names::JUMP_SRC, 0l);
         values.insert(make_pair(RegisterName::Names::ALU_OP, 0l));
-        id_ex.setValue(RegisterName::Names::ALU_OP, 0l);
+        id_ex->setValue(RegisterName::Names::ALU_OP, 0l);
         values.insert(make_pair(RegisterName::Names::HALT, 0l));
-        id_ex.setValue(RegisterName::Names::HALT, 0l);
+        id_ex->setValue(RegisterName::Names::HALT, 0l);
 
-        if (if_id.getValue(RegisterName::Names::OP_CODE) == NOP) {
+        if (if_id->getValue(RegisterName::Names::OP_CODE) == NOP) {
             return values;
         }
 
         switch ((int)opCode) {
             case ARITH_OP_CODE:
                 values.insert(make_pair(RegisterName::Names::REG_DST, 1l));
-                id_ex.setValue(RegisterName::Names::REG_DST, 1l);
+                id_ex->setValue(RegisterName::Names::REG_DST, 1l);
 
                 values.insert(make_pair(RegisterName::Names::REG_WRITE, 1l));
-                id_ex.setValue(RegisterName::Names::REG_WRITE, 1l);
+                id_ex->setValue(RegisterName::Names::REG_WRITE, 1l);
 
                 switch ((int)funct) {
                     case SUB_FUNCT:
                         values.insert(make_pair(RegisterName::Names::ALU_OP, 1l));
-                        id_ex.setValue(RegisterName::Names::ALU_OP, 1l);
+                        id_ex->setValue(RegisterName::Names::ALU_OP, 1l);
                         break;
                     case AND_FUNCT:
                         values.insert(make_pair(RegisterName::Names::ALU_OP, 2l));
-                        id_ex.setValue(RegisterName::Names::ALU_OP, 2l);
+                        id_ex->setValue(RegisterName::Names::ALU_OP, 2l);
                         break;
                     case OR_FUNCT:
                         values.insert(make_pair(RegisterName::Names::ALU_OP, 3l));
-                        id_ex.setValue(RegisterName::Names::ALU_OP, 3l);
+                        id_ex->setValue(RegisterName::Names::ALU_OP, 3l);
                         break;
                     case NOR_FUNCT:
                         values.insert(make_pair(RegisterName::Names::ALU_OP, 4l));
-                        id_ex.setValue(RegisterName::Names::ALU_OP, 4l);
+                        id_ex->setValue(RegisterName::Names::ALU_OP, 4l);
                         break;
                     case SLT_FUNCT:
                         values.insert(make_pair(RegisterName::Names::ALU_OP, 5l));
-                        id_ex.setValue(RegisterName::Names::ALU_OP, 5l);
+                        id_ex->setValue(RegisterName::Names::ALU_OP, 5l);
                         break;
                     case JR_FUNCT:
                         values.insert(make_pair(RegisterName::Names::JUMP, 1l));
-                        id_ex.setValue(RegisterName::Names::JUMP, 1l);
+                        id_ex->setValue(RegisterName::Names::JUMP, 1l);
 
                         values.insert(make_pair(RegisterName::Names::JUMP_SRC, 1l));
-                        id_ex.setValue(RegisterName::Names::JUMP_SRC, 1l);
+                        id_ex->setValue(RegisterName::Names::JUMP_SRC, 1l);
                         break;
                 }
                 break;
 
             case ADDI:
                 values.insert(make_pair(RegisterName::Names::ALU_SRC, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_SRC, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_SRC, 1l);
 
                 values.insert(make_pair(RegisterName::Names::REG_WRITE, 1l));
-                id_ex.setValue(RegisterName::Names::REG_WRITE, 1l);
+                id_ex->setValue(RegisterName::Names::REG_WRITE, 1l);
 
                 break;
 
             case ANDI:
                 values.insert(make_pair(RegisterName::Names::ALU_SRC, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_SRC, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_SRC, 1l);
 
                 values.insert(make_pair(RegisterName::Names::REG_WRITE, 1l));
-                id_ex.setValue(RegisterName::Names::REG_WRITE, 1l);
+                id_ex->setValue(RegisterName::Names::REG_WRITE, 1l);
 
                 values.insert(make_pair(RegisterName::Names::ALU_OP, 2l));
-                id_ex.setValue(RegisterName::Names::ALU_OP, 2l);
+                id_ex->setValue(RegisterName::Names::ALU_OP, 2l);
 
                 break;
 
             case ORI:
                 values.insert(make_pair(RegisterName::Names::ALU_SRC, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_SRC, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_SRC, 1l);
 
                 values.insert(make_pair(RegisterName::Names::REG_WRITE, 1l));
-                id_ex.setValue(RegisterName::Names::REG_WRITE, 1l);
+                id_ex->setValue(RegisterName::Names::REG_WRITE, 1l);
 
                 values.insert(make_pair(RegisterName::Names::ALU_OP, 3l));
-                id_ex.setValue(RegisterName::Names::ALU_OP, 3l);
+                id_ex->setValue(RegisterName::Names::ALU_OP, 3l);
 
                 break;
 
             case SLTI:
                 values.insert(make_pair(RegisterName::Names::ALU_SRC, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_SRC, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_SRC, 1l);
 
                 values.insert(make_pair(RegisterName::Names::REG_WRITE, 1l));
-                id_ex.setValue(RegisterName::Names::REG_WRITE, 1l);
+                id_ex->setValue(RegisterName::Names::REG_WRITE, 1l);
 
                 values.insert(make_pair(RegisterName::Names::ALU_OP, 5l));
-                id_ex.setValue(RegisterName::Names::ALU_OP, 5l);
+                id_ex->setValue(RegisterName::Names::ALU_OP, 5l);
 
                 break;
 
             case BEQ:
                 values.insert(make_pair(RegisterName::Names::BRANCH, 1l));
-                id_ex.setValue(RegisterName::Names::BRANCH, 1l);
+                id_ex->setValue(RegisterName::Names::BRANCH, 1l);
 
                 values.insert(make_pair(RegisterName::Names::ALU_OP, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_OP, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_OP, 1l);
 
                 break;
 
             case BNE:
                 values.insert(make_pair(RegisterName::Names::BRANCH, 1l));
-                id_ex.setValue(RegisterName::Names::BRANCH, 1l);
+                id_ex->setValue(RegisterName::Names::BRANCH, 1l);
 
                 values.insert(make_pair(RegisterName::Names::BRANCH_NE, 1l));
-                id_ex.setValue(RegisterName::Names::BRANCH_NE, 1l);
+                id_ex->setValue(RegisterName::Names::BRANCH_NE, 1l);
 
                 values.insert(make_pair(RegisterName::Names::ALU_OP, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_OP, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_OP, 1l);
 
                 break;
 
             case J:
                 values.insert(make_pair(RegisterName::Names::JUMP, 1l));
-                id_ex.setValue(RegisterName::Names::JUMP, 1l);
+                id_ex->setValue(RegisterName::Names::JUMP, 1l);
 
                 break;
 
             case LW:
                 values.insert(make_pair(RegisterName::Names::ALU_SRC, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_SRC, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_SRC, 1l);
 
                 values.insert(make_pair(RegisterName::Names::MEM_TO_REG, 1l));
-                id_ex.setValue(RegisterName::Names::MEM_TO_REG, 1l);
+                id_ex->setValue(RegisterName::Names::MEM_TO_REG, 1l);
 
                 values.insert(make_pair(RegisterName::Names::REG_WRITE, 1l));
-                id_ex.setValue(RegisterName::Names::REG_WRITE, 1l);
+                id_ex->setValue(RegisterName::Names::REG_WRITE, 1l);
 
                 values.insert(make_pair(RegisterName::Names::MEM_READ, 1l));
-                id_ex.setValue(RegisterName::Names::MEM_READ, 1l);
+                id_ex->setValue(RegisterName::Names::MEM_READ, 1l);
 
                 break;
 
             case SW:
                 values.insert(make_pair(RegisterName::Names::ALU_SRC, 1l));
-                id_ex.setValue(RegisterName::Names::ALU_SRC, 1l);
+                id_ex->setValue(RegisterName::Names::ALU_SRC, 1l);
 
                 values.insert(make_pair(RegisterName::Names::MEM_WRITE, 1l));
-                id_ex.setValue(RegisterName::Names::MEM_WRITE, 1l);
+                id_ex->setValue(RegisterName::Names::MEM_WRITE, 1l);
 
                 break;
 
             case HLT:
                 values.insert(make_pair(RegisterName::Names::HALT, 1l));
-                id_ex.setValue(RegisterName::Names::HALT, 1l);
+                id_ex->setValue(RegisterName::Names::HALT, 1l);
 
                 break;
         }
@@ -580,24 +632,24 @@ private :
     }
 private:
     void stallPipeline() {
-        zeroOutRegister(id_ex);
+        zeroOutRegister(*id_ex);
 
-        if_id.disableWrite();
-        pc.disableWrite();
+        if_id->disableWrite();
+        pc->disableWrite();
     }
 
    void takeBranch(long addressOffset) {
-        zeroOutRegister(if_id);
+        zeroOutRegister(*if_id);
 
-        pc.setValue(if_id.getValue(RegisterName::Names::PC) + 4 + 4 * addressOffset);
-        pc.enableWrite();
+        pc->setValue(if_id->getValue(RegisterName::Names::PC) + 4 + 4 * addressOffset);
+        pc->enableWrite();
     }
 
     void takeJump(long address) {
-        zeroOutRegister(if_id);
+        zeroOutRegister(*if_id);
 
-        pc.setValue(address * 4);
-        pc.enableWrite();
+        pc->setValue(address * 4);
+        pc->enableWrite();
     }
 
      void zeroOutRegister(PipelineRegister rp) {
@@ -617,68 +669,79 @@ private:
 };
 class Execute{
 private:
-    PipelineRegister ex_mem;
-    PipelineRegister id_ex;
-    PipelineRegister mem_wb;
+    PipelineRegister *ex_mem;
+    PipelineRegister *id_ex;
+    PipelineRegister *mem_wb;
 public:
     Execute() {}
+
+    Execute(
+            PipelineRegister *id_ex,
+            PipelineRegister *ex_mem,
+            PipelineRegister *mem_wb
+    ) {
+        Execute::id_ex = id_ex;
+        Execute::ex_mem = ex_mem;
+        Execute::mem_wb = mem_wb;
+    }
 
     void run() {
         long aluArg1, aluArg2, writeData;
 
-        long dest = ex_mem.getValue(RegisterName::Names::REG_DST) == 1 ?
-                    ex_mem.getValue(RegisterName::Names::REG_D) :
-                    ex_mem.getValue(RegisterName::Names::REG_T);
-        long dest2 = mem_wb.getValue(RegisterName::Names::REG_DST) == 1 ?
-                     mem_wb.getValue(RegisterName::Names::REG_D) :
-                     mem_wb.getValue(RegisterName::Names::REG_T);
+        long dest = ex_mem->getValue(RegisterName::Names::REG_DST) == 1 ?
+                    ex_mem->getValue(RegisterName::Names::REG_D) :
+                    ex_mem->getValue(RegisterName::Names::REG_T);
 
-        if (ex_mem.getValue(RegisterName::Names::REG_WRITE) == 1 &&
+        long dest2 = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
+                     mem_wb->getValue(RegisterName::Names::REG_D) :
+                     mem_wb->getValue(RegisterName::Names::REG_T);
+
+        if (ex_mem->getValue(RegisterName::Names::REG_WRITE) == 1 &&
             dest != 0 &&
-            dest == id_ex.getValue(RegisterName::Names::REG_S))
+            dest == id_ex->getValue(RegisterName::Names::REG_S))
         {
-            aluArg1 = ex_mem.getValue(RegisterName::Names::ALU_RESULT);
-        } else if (mem_wb.getValue(RegisterName::Names::REG_WRITE) == 1 &&
+            aluArg1 = ex_mem->getValue(RegisterName::Names::ALU_RESULT);
+        } else if (mem_wb->getValue(RegisterName::Names::REG_WRITE) == 1 &&
                    dest2 != 0 &&
-                   dest2 == id_ex.getValue(RegisterName::Names::REG_S)) {
-            if (mem_wb.getValue(RegisterName::Names::MEM_TO_REG) == 1) {
-                aluArg1 = mem_wb.getValue(RegisterName::Names::MEM_RESULT);
+                   dest2 == id_ex->getValue(RegisterName::Names::REG_S)) {
+            if (mem_wb->getValue(RegisterName::Names::MEM_TO_REG) == 1) {
+                aluArg1 = mem_wb->getValue(RegisterName::Names::MEM_RESULT);
             } else {
-                aluArg1 = mem_wb.getValue(RegisterName::Names::ALU_RESULT);
+                aluArg1 = mem_wb->getValue(RegisterName::Names::ALU_RESULT);
             }
         } else {
-            aluArg1 = id_ex.getValue(RegisterName::Names::READ_DATA_1);
+            aluArg1 = id_ex->getValue(RegisterName::Names::READ_DATA_1);
         }
 
 
-        if (ex_mem.getValue(RegisterName::Names::REG_WRITE) == 1 &&
+        if (ex_mem->getValue(RegisterName::Names::REG_WRITE) == 1 &&
             dest != 0 &&
-            dest == id_ex.getValue(RegisterName::Names::REG_T))
+            dest == id_ex->getValue(RegisterName::Names::REG_T))
         {
-            writeData = ex_mem.getValue(RegisterName::Names::ALU_RESULT);
-        } else if (mem_wb.getValue(RegisterName::Names::REG_WRITE) == 1 &&
+            writeData = ex_mem->getValue(RegisterName::Names::ALU_RESULT);
+        } else if (mem_wb->getValue(RegisterName::Names::REG_WRITE) == 1 &&
                    dest2 != 0 &&
-                   dest2 == id_ex.getValue(RegisterName::Names::REG_T)) {
-            if (mem_wb.getValue(RegisterName::Names::MEM_TO_REG) == 1) {
-                writeData = mem_wb.getValue(RegisterName::Names::MEM_RESULT);
+                   dest2 == id_ex->getValue(RegisterName::Names::REG_T)) {
+            if (mem_wb->getValue(RegisterName::Names::MEM_TO_REG) == 1) {
+                writeData = mem_wb->getValue(RegisterName::Names::MEM_RESULT);
             } else {
-                writeData = mem_wb.getValue(RegisterName::Names::ALU_RESULT);
+                writeData = mem_wb->getValue(RegisterName::Names::ALU_RESULT);
             }
         } else {
-            writeData = id_ex.getValue(RegisterName::Names::READ_DATA_2);
+            writeData = id_ex->getValue(RegisterName::Names::READ_DATA_2);
         }
 
-        if (id_ex.getValue(RegisterName::Names::ALU_SRC) == 0) {
+        if (id_ex->getValue(RegisterName::Names::ALU_SRC) == 0) {
             aluArg2 = writeData;
         } else {
-            aluArg2 = id_ex.getValue(RegisterName::Names::IMMEDIATE);
+            aluArg2 = id_ex->getValue(RegisterName::Names::IMMEDIATE);
         }
 
-        id_ex.forwardValues(ex_mem);
+        id_ex->forwardValues(*ex_mem);
 
         long result = 0;
 
-        switch((int)id_ex.getValue(RegisterName::Names::ALU_OP)) {
+        switch((int)id_ex->getValue(RegisterName::Names::ALU_OP)) {
             case (0):
                 result = aluArg1 + aluArg2;
                 break;
@@ -699,31 +762,23 @@ public:
                 break;
         }
 
-        ex_mem.setValue(RegisterName::Names ::ALU_RESULT, result);
-        ex_mem.setValue(RegisterName::Names ::WRITE_DATA, writeData);
-    }
-
-    Execute(
-            PipelineRegister id_ex,
-            PipelineRegister ex_mem,
-            PipelineRegister mem_wb
-    ) {
-        Execute::id_ex = id_ex;
-        Execute::ex_mem = ex_mem;
-        Execute::mem_wb = mem_wb;
+        ex_mem->setValue(RegisterName::Names ::ALU_RESULT, result);
+        ex_mem->setValue(RegisterName::Names ::WRITE_DATA, writeData);
     }
 };
+
+
 class Fetch {
 private:
     static const int HALT_INSTRUCTION = 0xFC000000;
-    PipelineRegister if_id;
-    MemoryStore memory;
-    ProgramCounter pc;
+    PipelineRegister *if_id;
+    MemoryStore *memory;
+    ProgramCounter *pc;
 public:
     Fetch(
-            PipelineRegister if_id,
-            MemoryStore memory,
-            ProgramCounter pc
+            PipelineRegister *if_id,
+            MemoryStore *memory,
+            ProgramCounter *pc
     ) {
         Fetch::if_id = if_id;
         Fetch::memory = memory;
@@ -733,27 +788,29 @@ public:
     Fetch() {}
 
     void run() {
-        long instruction = memory.getValue(pc.getValue());
+        long instruction = memory->getValue((*pc).getValue());
         //System.out.println(Integer.toHexString(instruction));
-        if_id.setValue(RegisterName::Names::INSTRUCTION, instruction);
-        if_id.setValue(RegisterName::Names::OP_CODE, 0);
-        if_id.setValue(RegisterName::Names::PC, pc.getValue());
+        (*if_id).setValue(RegisterName::Names::INSTRUCTION, instruction);
+
+
+        (*if_id).setValue(RegisterName::Names::OP_CODE, 0);
+        (*if_id).setValue(RegisterName::Names::PC, (*pc).getValue());
 
         if (instruction != HALT_INSTRUCTION) {
-            pc.increment();
+            (*pc).increment();
         }
     }
 };
 class Memory{
     private:
-        PipelineRegister ex_mem;
-        PipelineRegister mem_wb;
-        MemoryStore memory;
+        PipelineRegister *ex_mem;
+        PipelineRegister *mem_wb;
+        MemoryStore *memory;
     public:
         Memory(
-                PipelineRegister ex_mem,
-                PipelineRegister mem_wb,
-                MemoryStore memory
+                PipelineRegister *ex_mem,
+                PipelineRegister *mem_wb,
+                MemoryStore *memory
         ) {
             Memory::ex_mem = ex_mem;
             Memory::mem_wb = mem_wb;
@@ -763,30 +820,30 @@ class Memory{
     Memory() {}
 
     void run() {
-            if (ex_mem.getValue(RegisterName::Names ::MEM_READ) == 1) {
-                mem_wb.setValue(
+            if (ex_mem->getValue(RegisterName::Names ::MEM_READ) == 1) {
+                mem_wb->setValue(
                         RegisterName::Names::MEM_RESULT,
-                        memory.getValue(ex_mem.getValue(RegisterName::Names::ALU_RESULT))
+                        memory->getValue(ex_mem->getValue(RegisterName::Names::ALU_RESULT))
                 );
             }
 
-            if (ex_mem.getValue(RegisterName::Names::MEM_WRITE) == 1) {
-                memory.storeValue(
-                        ex_mem.getValue(RegisterName::Names::ALU_RESULT),
-                        ex_mem.getValue(RegisterName::Names::WRITE_DATA)
+            if (ex_mem->getValue(RegisterName::Names::MEM_WRITE) == 1) {
+                memory->storeValue(
+                        ex_mem->getValue(RegisterName::Names::ALU_RESULT),
+                        ex_mem->getValue(RegisterName::Names::WRITE_DATA)
                 );
             }
 
-            ex_mem.forwardValues(mem_wb);
+            ex_mem->forwardValues(*mem_wb);
         }
     };
 class Writeback{
-    PipelineRegister mem_wb;
-    RegisterFile registerFile;
+    PipelineRegister *mem_wb;
+    RegisterFile *registerFile;
 public :
     Writeback(
-            PipelineRegister mem_wb,
-            RegisterFile registerFile
+            PipelineRegister *mem_wb,
+            RegisterFile *registerFile
     ) {
        Writeback:: mem_wb = mem_wb;
        Writeback:: registerFile = registerFile;
@@ -795,37 +852,37 @@ public :
     Writeback() {}
 
     bool done() {
-        return mem_wb.getValue(RegisterName::Names::HALT) == 1;
+        return mem_wb->getValue(RegisterName::Names::HALT) == 1;
     }
     bool isNop() {
-        return mem_wb.getValue(RegisterName::Names::REG_DST) == 0 &&
-               mem_wb.getValue(RegisterName::Names ::ALU_SRC) == 0 &&
-               mem_wb.getValue(RegisterName::Names::MEM_TO_REG) == 0 &&
-               mem_wb.getValue(RegisterName::Names ::REG_WRITE) == 0 &&
-               mem_wb.getValue(RegisterName::Names::MEM_READ) == 0 &&
-               mem_wb.getValue(RegisterName::Names::MEM_WRITE) == 0 &&
-               mem_wb.getValue(RegisterName::Names::BRANCH) == 0 &&
-               mem_wb.getValue(RegisterName::Names::BRANCH_NE) == 0 &&
-               mem_wb.getValue(RegisterName::Names::JUMP) == 0 &&
-               mem_wb.getValue(RegisterName::Names::JUMP_SRC) == 0 &&
-               mem_wb.getValue(RegisterName::Names::ALU_OP) == 0;
+        return mem_wb->getValue(RegisterName::Names::REG_DST) == 0 &&
+               mem_wb->getValue(RegisterName::Names ::ALU_SRC) == 0 &&
+               mem_wb->getValue(RegisterName::Names::MEM_TO_REG) == 0 &&
+               mem_wb->getValue(RegisterName::Names ::REG_WRITE) == 0 &&
+               mem_wb->getValue(RegisterName::Names::MEM_READ) == 0 &&
+               mem_wb->getValue(RegisterName::Names::MEM_WRITE) == 0 &&
+               mem_wb->getValue(RegisterName::Names::BRANCH) == 0 &&
+               mem_wb->getValue(RegisterName::Names::BRANCH_NE) == 0 &&
+               mem_wb->getValue(RegisterName::Names::JUMP) == 0 &&
+               mem_wb->getValue(RegisterName::Names::JUMP_SRC) == 0 &&
+               mem_wb->getValue(RegisterName::Names::ALU_OP) == 0;
     }
 
 
 public:
     void run() {
-        if (mem_wb.getValue(RegisterName::Names::REG_WRITE) == 1) {
-            long dest = mem_wb.getValue(RegisterName::Names::REG_DST) == 1 ?
-                        mem_wb.getValue(RegisterName::Names::REG_D) :
-                        mem_wb.getValue(RegisterName::Names::REG_T);
+        if (mem_wb->getValue(RegisterName::Names::REG_WRITE) == 1) {
+            long dest = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
+                        mem_wb->getValue(RegisterName::Names::REG_D) :
+                        mem_wb->getValue(RegisterName::Names::REG_T);
 
-            long value = mem_wb.getValue(RegisterName::Names::MEM_TO_REG) == 1 ?
-                         mem_wb.getValue(RegisterName::Names::MEM_RESULT) :
-                         mem_wb.getValue(RegisterName::Names::ALU_RESULT);
+            long value = mem_wb->getValue(RegisterName::Names::MEM_TO_REG) == 1 ?
+                         mem_wb->getValue(RegisterName::Names::MEM_RESULT) :
+                         mem_wb->getValue(RegisterName::Names::ALU_RESULT);
 
             if (dest != 0) {
-                registerFile.setValue(RegisterName::valueOf(dest), value);
-                registerFile.tick();
+                registerFile->setValue(RegisterName::valueOf(dest), value);
+                registerFile->tick();
             }
         }
     }
@@ -887,6 +944,8 @@ private :
      */
     Writeback writeback;
 
+    MemoryStore memoryStore;
+
     /**
      * Tick all the various registers of the program.  This is called
      * once per cycle.
@@ -902,14 +961,14 @@ public:
 
     Mips(char filename[]){
             // create the memory store
-            MemoryStore memoryStore(filename);
+            memoryStore.readFile(filename);
 
             // create the various pipeline stages
-            fetch = Fetch(if_id, memoryStore, programCounter);
-            decode = Decode(if_id, id_ex, registerFile, programCounter);
-            execute = Execute(id_ex, ex_mem, mem_wb);
-            memory = Memory(ex_mem, mem_wb, memoryStore);
-            writeback = Writeback(mem_wb, registerFile);
+            fetch = Fetch(&if_id, &memoryStore, &programCounter);
+            decode = Decode(&if_id, &id_ex, &registerFile, &programCounter);
+            execute = Execute(&id_ex, &ex_mem, &mem_wb);
+            memory = Memory(&ex_mem, &mem_wb, &memoryStore);
+            writeback = Writeback(&mem_wb, &registerFile);
     }
 
 /**
@@ -957,6 +1016,8 @@ private:
 };
 
 
+
+
 int main() {
     //TODO: delete this
     /*
@@ -967,8 +1028,16 @@ int main() {
         cout << (*k).second << endl;
     }
     */
-    char filename[50];
-    cin >> filename;
+    /*
+    RegisterFile x;
+    x.setValue(RegisterName::Names::REG_0, 4);
+    x.tick();
+    cout << x.getValue(RegisterName::Names::REG_0);
+    cout << x.registers.size();
+     */
+    //cin >> filename;
+    char filename[50] = "test.txt";
+
     try {
         Mips mips(filename);
         mips.run();
