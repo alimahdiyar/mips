@@ -94,8 +94,8 @@ public:
     }
 
     unsigned int newValue = -1;
-private:
-    unsigned int value;// meghdar register
+    unsigned int value;
+    // meghdar register
 //value jadid ke mikhad rekhte beshe dakhel reg
 };
 class RegisterName {
@@ -173,13 +173,24 @@ private:
     vector<unsigned int> memory;
 public:
 //********constructor************
-    MemoryStore(){}
+    //MemoryStore(){}
 
-    /**  HALT command for test
+    // HALT Command for test
     MemoryStore(){
+        unsigned int x =
+                ((unsigned int) 0x20)
+                +(((unsigned int) 0x40) << 8)
+                +(((unsigned int) 0x32) << 16)
+                +(((unsigned int) 0x02) << 24);
+        memory.push_back(x);
+        x =
+                ((unsigned int) 0b00100010)
+                +(((unsigned int) 0b00010000) << 8)
+                +(((unsigned int) 0b00010011) << 16)
+                +(((unsigned int) 0b00000001) << 24);
+        memory.push_back(x);
         memory.push_back((int)(((unsigned int) 0xFC) << 24));
     }
-     **/
 
 //*********in mips data on word***********
     void readFile(char filename[]) {
@@ -268,7 +279,6 @@ private:
     map<RegisterName::Names, Register> registers;
 protected:
         virtual bool validRegister(RegisterName::Names registerName) {
-            //TODO: Read this
             if(
             registerName == RegisterName::Names::REG_0 ||
             registerName == RegisterName::Names::REG_1 ||
@@ -408,7 +418,6 @@ private:
     RegisterFile *registerFile;
     ProgramCounter *pc;
 public:
-    //TODO:chera 2 constructor dare?
  //***************decode constructor*******************
     Decode(PipelineRegister *if_id, PipelineRegister *id_ex, RegisterFile *registerFile, ProgramCounter *pc) {
         Decode::if_id = if_id;
@@ -420,7 +429,7 @@ public:
     Decode() {}
 
     void run() {
-     //TODO: Read this
+     // (*if_id).getValue    =    if_id->getValue
      unsigned int instruction = if_id->getValue(RegisterName::Names::INSTRUCTION);
      unsigned int opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
      unsigned int rs = (instruction & RS_MASK) >> RS_SHIFT;
@@ -984,9 +993,15 @@ public:
 
     Mips(char filename[]){
             // create the memory store
-            memoryStore.readFile(filename);
+            //memoryStore.readFile(filename);
 
-            // create the various pipeline stages
+        registerFile.setValue(RegisterName::Names::REG_17, 3);
+        registerFile.registers.at(RegisterName::Names::REG_17).tick();
+        registerFile.setValue(RegisterName::Names::REG_18, 4);
+        registerFile.registers.at(RegisterName::Names::REG_18).tick();
+        registerFile.setValue(RegisterName::Names::REG_19, 4);
+        registerFile.registers.at(RegisterName::Names::REG_19).tick();
+        // create the various pipeline stages
             fetch = Fetch(&if_id, &memoryStore, &programCounter);
             decode = Decode(&if_id, &id_ex, &registerFile, &programCounter);
             execute = Execute(&id_ex, &ex_mem, &mem_wb);
@@ -1025,6 +1040,8 @@ public:
         // tick over all our register values
         tick();
     }
+        cout << registerFile.registers.at(RegisterName::Names::REG_2).getValue() << endl;
+        cout << cycleCount;
 }
 
 private:
@@ -1042,24 +1059,8 @@ private:
 
 
 int main() {
-    //TODO: delete this
-    /*
-    map<string, string> x;
-    x.insert(make_pair("maryam", "sofi"));
-    x.insert(make_pair("ali", "camel"));
-    for(map<string, string>::iterator k = x.begin(); k != x.end(); k++){
-        cout << (*k).second << endl;
-    }
-    */
-    /*
-    RegisterFile x;
-    x.setValue(RegisterName::Names::REG_0, 4);
-    x.tick();
-    cout << x.getValue(RegisterName::Names::REG_0);
-    cout << x.registers.size();
-     */
-    char filename[50];
-    cin >> filename;
+    char filename[50] = "test.txt";
+    //cin >> filename;
 
     try {
         Mips mips(filename);
