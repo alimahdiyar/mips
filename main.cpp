@@ -12,7 +12,7 @@ using namespace std;
 class Register {
 public:
     bool enable = true; //value jadid biyad dakhel reg ya na
-
+//************constructor*****************
     Register() {
         Register::value = 0;
     }
@@ -20,7 +20,7 @@ public:
     Register(long value) {
         Register::value = value;
     }
-
+//*******getter and setter************
     long getValue() const {
         return value;
     }
@@ -28,15 +28,15 @@ public:
     void setValue(long newValue) {
         Register::newValue = newValue;
     }
-
+//*************cheack mikone age value jadid + besh ********************
     void tick() {
         if (enable) {
             if (newValue != -1) {
                 value = newValue;
                 newValue = -1;
-            } else {
-                enable = true;
             }
+        } else {
+            enable = true;
         }
     }
 
@@ -114,17 +114,22 @@ public:
         OP_CODE,
         PC
     };
-
+//***************1 add midim reg name k mal in index hast barmigardone*********
     static RegisterName::Names valueOf(long ordinal) {
         return static_cast<RegisterName::Names>(ordinal);
     }
 
 };
 class MemoryStore {
+//**********mem include instruction and data mem**********
 private:
+//*********array************
     vector<long> memory;
 public:
+//********constructor************
     MemoryStore(){}
+//*********in mips data on word***********
+
     MemoryStore(char filename[]) {
         char f[4];
         FILE *pFile;
@@ -133,19 +138,20 @@ public:
             fscanf(pFile, "%c", &f[1]);
             fscanf(pFile, "%c", &f[2]);
             fscanf(pFile, "%c", &f[3]);
-
+ // ********create a word from the 4 bytes**********
             long word = getUnsignedValue(f[0]);
             word += getUnsignedValue(f[1]) << 8;
             word += getUnsignedValue(f[2]) << 16;
             word += getUnsignedValue(f[3]) << 24;
 
-            // add the word to our memory store
+ //********** add the word to our memory store*********
             memory.push_back(word);
         }
         fclose(pFile);
     }
 
     long getValue(long location) {
+// *********we want to access the memory on a word boundary *******************
         long memAddress = location >> 2;
         if (memAddress >= memory.size()) {
             throw "Memory address out of bounds";
@@ -154,6 +160,7 @@ public:
     }
 
     void storeValue(long location, long value) {
+// *********get the word address from the byte address *******************
         long memoryAddress = location >> 2;
 
         if (memoryAddress >= memory.size()) {
@@ -162,7 +169,7 @@ public:
         memory[(int) memoryAddress] = value;
     }
 
-    // age 1000 masalan bod adade manfi hast ba in mosbat mishe
+// ********age 1000 masalan bod adade manfi hast ba in mosbat mishe******************
     long getUnsignedValue(char b) {
         if (b >= 0) { return b; }
 
@@ -176,11 +183,12 @@ class RegisterFile {
     private:
         bool enable = true;
     public:
+// reg migere meghdar reg ba on esm mikone value k behesh dadim
         void setValue(RegisterName::Names registerName, long value) {
             Register reg = getRegister(registerName);
             reg.setValue(value);
         }
-
+// meghdar reg ba in esm bar migardone
         long getValue(RegisterName::Names registerName) {
             return getRegister(registerName).getValue();
         }
@@ -188,7 +196,7 @@ class RegisterFile {
         void disableWrite() {
             enable = false;
         }
-
+// 1 clock cycle harekat mikone
         void tick() {
             if (enable) {
                 for(map<RegisterName::Names , Register>::iterator k = registers.begin(); k != registers.end(); k++){
@@ -201,6 +209,7 @@ class RegisterFile {
 
 
     protected:
+    //*********mege jozve r0 ta r1 hast ya na***************
         bool validRegister(RegisterName::Names registerName) {
             //TODO: Read this
             if(
@@ -243,10 +252,12 @@ class RegisterFile {
         }
 
     private:
+ //*********1 reg name migere va reg k be on esm hast barmigardone************
         Register getRegister(RegisterName::Names registerName) {
             if (!validRegister(registerName)) {
                 throw "Invalid register";
             }
+//********mige reg ba in name age vojod nadasht besaz vasam********
             if (registers.find(registerName) == registers.end()) {
                 Register reg;
                 registers.insert(make_pair(registerName, reg));
@@ -255,9 +266,14 @@ class RegisterFile {
         }
     };
 class ProgramCounter :  public Register{
+
+/**
+ * The program counter that keeps track of what instruction in memory should
+ * be executed next.
+ */
 public:
     ProgramCounter() : Register(0x1000){} //initial value
-
+//***********pc+4 for next instruction (worde 4 ta 4 ta)********
     void increment(){
         newValue = getValue() + 4;
     }
@@ -268,13 +284,13 @@ class PipelineRegister : public RegisterFile{
 public:
     PipelineRegister () : RegisterFile() {
         Register reg(0xFF);
-        //TODO: Read this
+
         registers.insert(make_pair(RegisterName::Names::OP_CODE, reg));
     }
-
+// meghdar reg in pipeline mifreste ro target
     void forwardValues(PipelineRegister target) {
 
-
+// k yek iterator hast ke ro map harekat mikone
         for(map<RegisterName::Names , Register>::iterator k = registers.begin(); k != registers.end(); k++){
             target.setValue((*k).first, (*k).second.getValue());
         }
@@ -282,6 +298,7 @@ public:
 
     }
 protected:
+    // function pedaresho over write mikoneh
     bool validRegister(RegisterName::Names registerName) {
         return true;
     }
@@ -328,13 +345,14 @@ private:
     static const int SW = 0x2B;
     static const int HLT = 0x3F;
 
-
+//***pipeline Reg*************
     PipelineRegister if_id;
     PipelineRegister id_ex;
     RegisterFile registerFile;
     ProgramCounter pc;
 public:
-    //TODO: Read this
+    //TODO:chera 2 constructor dare?
+ //***************decode constructor*******************
     Decode(PipelineRegister if_id, PipelineRegister id_ex, RegisterFile registerFile, ProgramCounter pc) {
         Decode::if_id = if_id;
         Decode::id_ex = id_ex;
