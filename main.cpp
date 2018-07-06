@@ -8,52 +8,6 @@
 #include <fstream>
 
 using namespace std;
-string getBinary(unsigned int value){
-    string str(64, '0');
-
-    for(unsigned int i = 0; i < 64; i++)
-    {
-        if( (1ll << i) & value)
-            str[63-i] = '1';
-    }
-
-    return str;
-}
-string getBinary(int value){
-    string str(64, '0');
-
-    for(unsigned int i = 0; i < 64; i++)
-    {
-        if( (1ll << i) & value)
-            str[63-i] = '1';
-    }
-
-    return str;
-}
-
-string getBinary(long value){
-    string str(64, '0');
-
-    for(unsigned int i = 0; i < 64; i++)
-    {
-        if( (1ll << i) & value)
-            str[63-i] = '1';
-    }
-
-    return str;
-}
-
-string getBinary(unsigned long value){
-    string str(64, '0');
-
-    for(unsigned int i = 0; i < 64; i++)
-    {
-        if( (1ll << i) & value)
-            str[63-i] = '1';
-    }
-
-    return str;
-}
 
 class Register {
 public:
@@ -173,43 +127,23 @@ private:
     vector<unsigned int> memory;
 public:
 //********constructor************
-    //MemoryStore(){}
-
-    // HALT Command for test
-    MemoryStore(){
-        unsigned int x =
-                ((unsigned int) 0x20)
-                +(((unsigned int) 0x40) << 8)
-                +(((unsigned int) 0x32) << 16)
-                +(((unsigned int) 0x02) << 24);
-        memory.push_back(x);
-        x =
-                ((unsigned int) 0b00100010)
-                +(((unsigned int) 0b00010000) << 8)
-                +(((unsigned int) 0b00010011) << 16)
-                +(((unsigned int) 0b00000001) << 24);
-        memory.push_back(x);
-        memory.push_back((int)(((unsigned int) 0xFC) << 24));
-    }
+    MemoryStore(){}
 
 //*********in mips data on word***********
     void readFile(char filename[]) {
-        char f[4];
+        char c;
         FILE *pFile;
         pFile = fopen(filename, "r");
-        while (fscanf(pFile, "%c", &f[0]) != EOF) {
-            fscanf(pFile, "%c", &f[1]);
-            fscanf(pFile, "%c", &f[2]);
-            fscanf(pFile, "%c", &f[3]);
- // ********create a word from the 4 bytes**********
-            unsigned int word = getUnsignedValue(f[3]);
-            word += getUnsignedValue(f[2]) << 8;
-            word += getUnsignedValue(f[1]) << 16;
-            word += getUnsignedValue(f[0]) << 24;
-
- //********** add the word to our memory store*********
+        do{
+            long word = 0;
+            for(int i = 31; i >= 0; i--){
+                fscanf(pFile, "%c", &c);
+                word += ((unsigned int) (c-'0')) << i;
+            }
+            //********** add the word to our memory store*********
             memory.push_back(word);
-        }
+        } while (fscanf(pFile, "%c", &c) != EOF);
+
         fclose(pFile);
     }
 
@@ -232,105 +166,98 @@ public:
         memory[(int) memoryAddress] = value;
     }
 
-// ********age 1000 masalan bod adade manfi hast ba in mosbat mishe******************
-    unsigned int getUnsignedValue(char b) {
-        if (b >= 0) { return b; }
-
-        return 256 + b;
-    }
-
 };
 class RegisterFile {
 private:
-        bool enable = true;
-    public:
+    bool enable = true;
+public:
 // reg migere meghdar reg ba on esm mikone value k behesh dadim
-        void setValue(RegisterName::Names registerName, unsigned int value) {
-            if (!validRegister(registerName)) {
-                throw "Invalid register";
-            }
-            if (registers.find(registerName) == registers.end()) {
-                registers.insert(make_pair(registerName, Register()));
-            }
-            registers.at(registerName).setValue(value);
+    void setValue(RegisterName::Names registerName, unsigned int value) {
+        if (!validRegister(registerName)) {
+            throw "Invalid register";
         }
+        if (registers.find(registerName) == registers.end()) {
+            registers.insert(make_pair(registerName, Register()));
+        }
+        registers.at(registerName).setValue(value);
+    }
 
 // meghdar reg ba in esm bar migardone
-        unsigned int getValue(RegisterName::Names registerName) {
-            return getRegister(registerName).getValue();
-        }
+    unsigned int getValue(RegisterName::Names registerName) {
+        return getRegister(registerName).getValue();
+    }
 
-        void disableWrite() {
+    void disableWrite() {
 
-            enable = false;
-        }
+        enable = false;
+    }
 // 1 clock cycle harekat mikone
-        void tick() {
-            if (enable) {
-                for(map<RegisterName::Names , Register>::iterator k = registers.begin(); k != registers.end(); k++){
-                    (*k).second.tick();
-                }
-            } else {
-                enable = true;
+    void tick() {
+        if (enable) {
+            for(map<RegisterName::Names , Register>::iterator k = registers.begin(); k != registers.end(); k++){
+                (*k).second.tick();
             }
+        } else {
+            enable = true;
         }
+    }
 
 
     map<RegisterName::Names, Register> registers;
 protected:
-        virtual bool validRegister(RegisterName::Names registerName) {
-            if(
-            registerName == RegisterName::Names::REG_0 ||
-            registerName == RegisterName::Names::REG_1 ||
-            registerName == RegisterName::Names::REG_2 ||
-            registerName == RegisterName::Names::REG_3 ||
-            registerName == RegisterName::Names::REG_4 ||
-            registerName == RegisterName::Names::REG_5 ||
-            registerName == RegisterName::Names::REG_6 ||
-            registerName == RegisterName::Names::REG_7 ||
-            registerName == RegisterName::Names::REG_8 ||
-            registerName == RegisterName::Names::REG_9 ||
-            registerName == RegisterName::Names::REG_10 ||
-            registerName == RegisterName::Names::REG_11 ||
-            registerName == RegisterName::Names::REG_12 ||
-            registerName == RegisterName::Names::REG_13 ||
-            registerName == RegisterName::Names::REG_14 ||
-            registerName == RegisterName::Names::REG_15 ||
-            registerName == RegisterName::Names::REG_16 ||
-            registerName == RegisterName::Names::REG_17 ||
-            registerName == RegisterName::Names::REG_18 ||
-            registerName == RegisterName::Names::REG_19 ||
-            registerName == RegisterName::Names::REG_20 ||
-            registerName == RegisterName::Names::REG_21 ||
-            registerName == RegisterName::Names::REG_22 ||
-            registerName == RegisterName::Names::REG_23 ||
-            registerName == RegisterName::Names::REG_24 ||
-            registerName == RegisterName::Names::REG_25 ||
-            registerName == RegisterName::Names::REG_26 ||
-            registerName == RegisterName::Names::REG_27 ||
-            registerName == RegisterName::Names::REG_28 ||
-            registerName == RegisterName::Names::REG_29 ||
-            registerName == RegisterName::Names::REG_30 ||
-            registerName == RegisterName::Names::REG_31
-            ){
-                return true;
-            }
-            return false;
+    virtual bool validRegister(RegisterName::Names registerName) {
+        if(
+                registerName == RegisterName::Names::REG_0 ||
+                registerName == RegisterName::Names::REG_1 ||
+                registerName == RegisterName::Names::REG_2 ||
+                registerName == RegisterName::Names::REG_3 ||
+                registerName == RegisterName::Names::REG_4 ||
+                registerName == RegisterName::Names::REG_5 ||
+                registerName == RegisterName::Names::REG_6 ||
+                registerName == RegisterName::Names::REG_7 ||
+                registerName == RegisterName::Names::REG_8 ||
+                registerName == RegisterName::Names::REG_9 ||
+                registerName == RegisterName::Names::REG_10 ||
+                registerName == RegisterName::Names::REG_11 ||
+                registerName == RegisterName::Names::REG_12 ||
+                registerName == RegisterName::Names::REG_13 ||
+                registerName == RegisterName::Names::REG_14 ||
+                registerName == RegisterName::Names::REG_15 ||
+                registerName == RegisterName::Names::REG_16 ||
+                registerName == RegisterName::Names::REG_17 ||
+                registerName == RegisterName::Names::REG_18 ||
+                registerName == RegisterName::Names::REG_19 ||
+                registerName == RegisterName::Names::REG_20 ||
+                registerName == RegisterName::Names::REG_21 ||
+                registerName == RegisterName::Names::REG_22 ||
+                registerName == RegisterName::Names::REG_23 ||
+                registerName == RegisterName::Names::REG_24 ||
+                registerName == RegisterName::Names::REG_25 ||
+                registerName == RegisterName::Names::REG_26 ||
+                registerName == RegisterName::Names::REG_27 ||
+                registerName == RegisterName::Names::REG_28 ||
+                registerName == RegisterName::Names::REG_29 ||
+                registerName == RegisterName::Names::REG_30 ||
+                registerName == RegisterName::Names::REG_31
+                ){
+            return true;
         }
+        return false;
+    }
 
-    private:
- //*********1 reg name migere va reg k be on esm hast barmigardone************
-        Register getRegister(RegisterName::Names registerName) {
-            if (!validRegister(registerName)) {
-                throw "Invalid register";
-            }
-//********mige reg ba in name age vojod nadasht besaz vasam********
-            if (registers.find(registerName) == registers.end()) {
-                registers.insert(make_pair(registerName, Register()));
-            }
-            return registers.at(registerName);
+private:
+    //*********1 reg name migere va reg k be on esm hast barmigardone************
+    Register getRegister(RegisterName::Names registerName) {
+        if (!validRegister(registerName)) {
+            throw "Invalid register";
         }
-    };
+//********mige reg ba in name age vojod nadasht besaz vasam********
+        if (registers.find(registerName) == registers.end()) {
+            registers.insert(make_pair(registerName, Register()));
+        }
+        return registers.at(registerName);
+    }
+};
 class ProgramCounter :  public Register{
 
 /**
@@ -418,7 +345,7 @@ private:
     RegisterFile *registerFile;
     ProgramCounter *pc;
 public:
- //***************decode constructor*******************
+    //***************decode constructor*******************
     Decode(PipelineRegister *if_id, PipelineRegister *id_ex, RegisterFile *registerFile, ProgramCounter *pc) {
         Decode::if_id = if_id;
         Decode::id_ex = id_ex;
@@ -429,59 +356,59 @@ public:
     Decode() {}
 
     void run() {
-     // (*if_id).getValue    =    if_id->getValue
-     unsigned int instruction = if_id->getValue(RegisterName::Names::INSTRUCTION);
-     unsigned int opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
-     unsigned int rs = (instruction & RS_MASK) >> RS_SHIFT;
-     unsigned int rt = (instruction & RT_MASK) >> RT_SHIFT;
-     unsigned int rd = (instruction & RD_MASK) >> RD_SHIFT;
-     unsigned int shamt = (instruction & SHAMT_MASK) >> SHAMT_SHIFT;
-     unsigned int funct = (instruction & FUNCT_MASK) >> FUNCT_SHIFT;
-     unsigned int immediate = (instruction & IMMEDIATE_MASK) >> IMMEDIATE_SHIFT;
-     unsigned int address = (instruction & ADDRESS_MASK) >> ADDRESS_SHIFT;
+        // (*if_id).getValue    =    if_id->getValue
+        unsigned int instruction = if_id->getValue(RegisterName::Names::INSTRUCTION);
+        unsigned int opCode = (instruction & OPCODE_MASK) >> OPCODE_SHIFT;
+        unsigned int rs = (instruction & RS_MASK) >> RS_SHIFT;
+        unsigned int rt = (instruction & RT_MASK) >> RT_SHIFT;
+        unsigned int rd = (instruction & RD_MASK) >> RD_SHIFT;
+        unsigned int shamt = (instruction & SHAMT_MASK) >> SHAMT_SHIFT;
+        unsigned int funct = (instruction & FUNCT_MASK) >> FUNCT_SHIFT;
+        unsigned int immediate = (instruction & IMMEDIATE_MASK) >> IMMEDIATE_SHIFT;
+        unsigned int address = (instruction & ADDRESS_MASK) >> ADDRESS_SHIFT;
 
-     id_ex->setValue(RegisterName::Names::REG_S, rs);
-     id_ex->setValue(RegisterName::Names::REG_T, rt);
-     id_ex->setValue(RegisterName::Names::REG_D, rd);
-     id_ex->setValue(RegisterName::Names::SHAMT, shamt);
-     id_ex->setValue(RegisterName::Names::IMMEDIATE, immediate);
-     id_ex->setValue(RegisterName::Names::ADDRESS, address);
-     id_ex->setValue(RegisterName::Names::OP_CODE, opCode);
-     map<RegisterName::Names , unsigned int> controlLines =
-             setControlLines(opCode, funct);
-     unsigned int readData1 = registerFile->getValue(RegisterName::valueOf(rs));
-     unsigned int readData2 = registerFile->getValue(RegisterName::valueOf(rt));
-     (*id_ex).setValue(RegisterName::Names::READ_DATA_1, readData1);
-     (*id_ex).setValue(RegisterName::Names::READ_DATA_2, readData2);
+        id_ex->setValue(RegisterName::Names::REG_S, rs);
+        id_ex->setValue(RegisterName::Names::REG_T, rt);
+        id_ex->setValue(RegisterName::Names::REG_D, rd);
+        id_ex->setValue(RegisterName::Names::SHAMT, shamt);
+        id_ex->setValue(RegisterName::Names::IMMEDIATE, immediate);
+        id_ex->setValue(RegisterName::Names::ADDRESS, address);
+        id_ex->setValue(RegisterName::Names::OP_CODE, opCode);
+        map<RegisterName::Names , unsigned int> controlLines =
+                setControlLines(opCode, funct);
+        unsigned int readData1 = registerFile->getValue(RegisterName::valueOf(rs));
+        unsigned int readData2 = registerFile->getValue(RegisterName::valueOf(rt));
+        (*id_ex).setValue(RegisterName::Names::READ_DATA_1, readData1);
+        (*id_ex).setValue(RegisterName::Names::READ_DATA_2, readData2);
 
-     if (id_ex->getValue(RegisterName::Names ::MEM_READ) == 1 &&
-         ((id_ex->getValue(RegisterName::Names::REG_T) == rs) ||
-          (id_ex->getValue(RegisterName::Names::REG_T) == rt)))
-     {
-         stallPipeline();
-     } else if (controlLines.at(RegisterName::Names ::BRANCH) == 1 &&
-                ((controlLines.at(RegisterName::Names ::BRANCH_NE) == 1 &&
-                  readData1 != readData2) ||
-                 (controlLines.at(RegisterName::Names ::BRANCH_NE) == 0 &&
-                  readData1 == readData2)))
-     {
-         takeBranch(immediate);
-     } else if (controlLines.at(RegisterName::Names ::JUMP) == 1) {
-         unsigned int jumpAddress = address;
+        if (id_ex->getValue(RegisterName::Names ::MEM_READ) == 1 &&
+            ((id_ex->getValue(RegisterName::Names::REG_T) == rs) ||
+             (id_ex->getValue(RegisterName::Names::REG_T) == rt)))
+        {
+            stallPipeline();
+        } else if (controlLines.at(RegisterName::Names ::BRANCH) == 1 &&
+                   ((controlLines.at(RegisterName::Names ::BRANCH_NE) == 1 &&
+                     readData1 != readData2) ||
+                    (controlLines.at(RegisterName::Names ::BRANCH_NE) == 0 &&
+                     readData1 == readData2)))
+        {
+            takeBranch(immediate);
+        } else if (controlLines.at(RegisterName::Names ::JUMP) == 1) {
+            unsigned int jumpAddress = address;
 
-         if (controlLines.at(RegisterName::Names ::JUMP_SRC) == 1) {
-             jumpAddress = readData1;
+            if (controlLines.at(RegisterName::Names ::JUMP_SRC) == 1) {
+                jumpAddress = readData1;
 
-             if (jumpAddress % 4 != 0) {
-                 throw ("jump register value not divisible by four");
-             }
+                if (jumpAddress % 4 != 0) {
+                    throw ("jump register value not divisible by four");
+                }
 
-             jumpAddress /= 4;
-         }
+                jumpAddress /= 4;
+            }
 
-         takeJump(jumpAddress);
-     }
- }
+            takeJump(jumpAddress);
+        }
+    }
 private :
     map<RegisterName::Names , unsigned int> setControlLines(
             unsigned int opCode, unsigned int funct
@@ -670,7 +597,7 @@ private:
         pc->disableWrite();
     }
 
-   void takeBranch(unsigned int addressOffset) {
+    void takeBranch(unsigned int addressOffset) {
         zeroOutRegister(*if_id);
 
         pc->setValue(if_id->getValue(RegisterName::Names::PC) + 4 + 4 * addressOffset);
@@ -684,7 +611,7 @@ private:
         pc->enableWrite();
     }
 
-     void zeroOutRegister(PipelineRegister rp) {
+    void zeroOutRegister(PipelineRegister rp) {
         rp.setValue(RegisterName::Names::REG_DST, 0);
         rp.setValue(RegisterName::Names::ALU_SRC, 0);
         rp.setValue(RegisterName::Names::MEM_TO_REG, 0);
@@ -721,12 +648,12 @@ public:
         unsigned int aluArg1, aluArg2, writeData;
 
         unsigned int dest = ex_mem->getValue(RegisterName::Names::REG_DST) == 1 ?
-                    ex_mem->getValue(RegisterName::Names::REG_D) :
-                    ex_mem->getValue(RegisterName::Names::REG_T);
+                            ex_mem->getValue(RegisterName::Names::REG_D) :
+                            ex_mem->getValue(RegisterName::Names::REG_T);
 
         unsigned int dest2 = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
-                     mem_wb->getValue(RegisterName::Names::REG_D) :
-                     mem_wb->getValue(RegisterName::Names::REG_T);
+                             mem_wb->getValue(RegisterName::Names::REG_D) :
+                             mem_wb->getValue(RegisterName::Names::REG_T);
 
         if (ex_mem->getValue(RegisterName::Names::REG_WRITE) == 1 &&
             dest != 0 &&
@@ -834,41 +761,41 @@ public:
     }
 };
 class Memory{
-    private:
-        PipelineRegister *ex_mem;
-        PipelineRegister *mem_wb;
-        MemoryStore *memory;
-    public:
-        Memory(
-                PipelineRegister *ex_mem,
-                PipelineRegister *mem_wb,
-                MemoryStore *memory
-        ) {
-            Memory::ex_mem = ex_mem;
-            Memory::mem_wb = mem_wb;
-            Memory::memory = memory;
-        }
+private:
+    PipelineRegister *ex_mem;
+    PipelineRegister *mem_wb;
+    MemoryStore *memory;
+public:
+    Memory(
+            PipelineRegister *ex_mem,
+            PipelineRegister *mem_wb,
+            MemoryStore *memory
+    ) {
+        Memory::ex_mem = ex_mem;
+        Memory::mem_wb = mem_wb;
+        Memory::memory = memory;
+    }
 
     Memory() {}
 
     void run() {
-            if (ex_mem->getValue(RegisterName::Names ::MEM_READ) == 1) {
-                mem_wb->setValue(
-                        RegisterName::Names::MEM_RESULT,
-                        memory->getValue(ex_mem->getValue(RegisterName::Names::ALU_RESULT))
-                );
-            }
-
-            if (ex_mem->getValue(RegisterName::Names::MEM_WRITE) == 1) {
-                memory->storeValue(
-                        ex_mem->getValue(RegisterName::Names::ALU_RESULT),
-                        ex_mem->getValue(RegisterName::Names::WRITE_DATA)
-                );
-            }
-
-            ex_mem->forwardValues(*mem_wb);
+        if (ex_mem->getValue(RegisterName::Names ::MEM_READ) == 1) {
+            mem_wb->setValue(
+                    RegisterName::Names::MEM_RESULT,
+                    memory->getValue(ex_mem->getValue(RegisterName::Names::ALU_RESULT))
+            );
         }
-    };
+
+        if (ex_mem->getValue(RegisterName::Names::MEM_WRITE) == 1) {
+            memory->storeValue(
+                    ex_mem->getValue(RegisterName::Names::ALU_RESULT),
+                    ex_mem->getValue(RegisterName::Names::WRITE_DATA)
+            );
+        }
+
+        ex_mem->forwardValues(*mem_wb);
+    }
+};
 class Writeback{
     PipelineRegister *mem_wb;
     RegisterFile *registerFile;
@@ -877,8 +804,8 @@ public :
             PipelineRegister *mem_wb,
             RegisterFile *registerFile
     ) {
-       Writeback:: mem_wb = mem_wb;
-       Writeback:: registerFile = registerFile;
+        Writeback:: mem_wb = mem_wb;
+        Writeback:: registerFile = registerFile;
     }
 
     Writeback() {}
@@ -905,12 +832,12 @@ public:
     void run() {
         if (mem_wb->getValue(RegisterName::Names::REG_WRITE) == 1) {
             unsigned int dest = mem_wb->getValue(RegisterName::Names::REG_DST) == 1 ?
-                        mem_wb->getValue(RegisterName::Names::REG_D) :
-                        mem_wb->getValue(RegisterName::Names::REG_T);
+                                mem_wb->getValue(RegisterName::Names::REG_D) :
+                                mem_wb->getValue(RegisterName::Names::REG_T);
 
             unsigned int value = mem_wb->getValue(RegisterName::Names::MEM_TO_REG) == 1 ?
-                         mem_wb->getValue(RegisterName::Names::MEM_RESULT) :
-                         mem_wb->getValue(RegisterName::Names::ALU_RESULT);
+                                 mem_wb->getValue(RegisterName::Names::MEM_RESULT) :
+                                 mem_wb->getValue(RegisterName::Names::ALU_RESULT);
 
             if (dest != 0) {
                 registerFile->setValue(RegisterName::valueOf(dest), value);
@@ -947,11 +874,6 @@ private :
     ProgramCounter programCounter;
 
     /**
-     * The register file for the CPU
-     */
-    RegisterFile registerFile;
-
-    /**
      * The fetch pipeline stage
      */
     Fetch fetch;
@@ -976,8 +898,6 @@ private :
      */
     Writeback writeback;
 
-    MemoryStore memoryStore;
-
     /**
      * Tick all the various registers of the program.  This is called
      * once per cycle.
@@ -992,58 +912,56 @@ public:
 
 
     Mips(char filename[]){
-            // create the memory store
-            //memoryStore.readFile(filename);
+        // create the memory store
+        memoryStore.readFile(filename);
 
-        registerFile.setValue(RegisterName::Names::REG_17, 3);
-        registerFile.registers.at(RegisterName::Names::REG_17).tick();
-        registerFile.setValue(RegisterName::Names::REG_18, 4);
-        registerFile.registers.at(RegisterName::Names::REG_18).tick();
-        registerFile.setValue(RegisterName::Names::REG_19, 4);
-        registerFile.registers.at(RegisterName::Names::REG_19).tick();
         // create the various pipeline stages
-            fetch = Fetch(&if_id, &memoryStore, &programCounter);
-            decode = Decode(&if_id, &id_ex, &registerFile, &programCounter);
-            execute = Execute(&id_ex, &ex_mem, &mem_wb);
-            memory = Memory(&ex_mem, &mem_wb, &memoryStore);
-            writeback = Writeback(&mem_wb, &registerFile);
+        fetch = Fetch(&if_id, &memoryStore, &programCounter);
+        decode = Decode(&if_id, &id_ex, &registerFile, &programCounter);
+        execute = Execute(&id_ex, &ex_mem, &mem_wb);
+        memory = Memory(&ex_mem, &mem_wb, &memoryStore);
+        writeback = Writeback(&mem_wb, &registerFile);
     }
 
 /**
  * Runs the MIPS simulator and prints the results out after completion.
  */
- void run() {
-    // keep track of the instructions run and the cycles run
-    int instructionCount = 0;
-    int cycleCount = 0;
+    int run() {
+        // keep track of the instructions run and the cycles run
+        int instructionCount = 0;
+        int cycleCount = 0;
 
-    // while we haven't halted
-    while(!writeback.done()) {
-        // run all the pipeline stages
-        fetch.run();
-        // note: writeback has to run before decode to
-        // avoid data hazards
-        writeback.run();
-        decode.run();
-        execute.run();
-        memory.run();
+        // while we haven't halted
+        while(!writeback.done()) {
+            // run all the pipeline stages
+            fetch.run();
+            // note: writeback has to run before decode to
+            // avoid data hazards
+            writeback.run();
+            decode.run();
+            execute.run();
+            memory.run();
 
-        // if we completed a non-stall instruction, increment
-        // the instruction counter
-        if (!writeback.isNop()) {
-            instructionCount++;
+            // if we completed a non-stall instruction, increment
+            // the instruction counter
+            if (!writeback.isNop()) {
+                instructionCount++;
+            }
+
+            // increment the cycle counter
+            cycleCount++;
+
+            // tick over all our register values
+            tick();
         }
-
-        // increment the cycle counter
-        cycleCount++;
-
-        // tick over all our register values
-        tick();
+        return cycleCount;
     }
-        cout << registerFile.registers.at(RegisterName::Names::REG_2).getValue() << endl;
-        cout << cycleCount;
-}
 
+    MemoryStore memoryStore;
+/**
+ * The register file for the CPU
+ */
+RegisterFile registerFile;
 private:
     void tick() {
         programCounter.tick();
@@ -1060,11 +978,19 @@ private:
 
 int main() {
     char filename[50] = "test.txt";
-    //cin >> filename;
+    cin >> filename;
 
     try {
         Mips mips(filename);
-        mips.run();
+        int cycles = mips.run();
+        cout << "Runned in " << cycles << " clock cycles." << endl;
+        cout << "Register Values:" << endl;
+
+        //print all primitive registers in mips object
+        for(map<RegisterName::Names , Register>::iterator k = mips.registerFile.registers.begin(); k != mips.registerFile.registers.end(); k++){
+            cout << "R" << (*k).first << ": " << (*k).second.getValue() << endl;
+        }
+
     }
     catch(char const* ex) {
         cout << ex;
